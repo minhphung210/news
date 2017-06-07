@@ -38,6 +38,7 @@ class NewsDetail extends Component {
     }
   };
   componentWillMount() {
+    let listLength = this.props.listData.length;
     this._panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: (event, gestureState) => {console.log(gestureState)},
       onStartShouldSetPanResponder: () => true,
@@ -53,8 +54,10 @@ class NewsDetail extends Component {
                   }
                 } else {
                   if (gestureState.dx < -30) {
-                    this.state.left0.setValue(gestureState.dx+30)
-                    this.state.left1.setValue(width+gestureState.dx+30)
+                    if (this.props.dataSlot0 +1 < listLength) {
+                      this.state.left0.setValue(gestureState.dx+30)
+                      this.state.left1.setValue(width+gestureState.dx+30)
+                    }
                   }
                 }
                 break;
@@ -64,8 +67,10 @@ class NewsDetail extends Component {
                   this.state.left1.setValue(gestureState.dx-30)
                 } else {
                   if (gestureState.dx < -30) {
-                    this.state.left1.setValue(gestureState.dx+30)
-                    this.state.left2.setValue(width+gestureState.dx+30)
+                    if (this.props.dataSlot0 +2 < listLength) {
+                      this.state.left1.setValue(gestureState.dx+30)
+                      this.state.left2.setValue(width+gestureState.dx+30)
+                    }
                   }
                 }
                 break;
@@ -75,8 +80,10 @@ class NewsDetail extends Component {
                   this.state.left2.setValue(gestureState.dx-30)
                 } else {
                   if (gestureState.dx < -30) {
-                    this.state.left0.setValue(width+gestureState.dx+30)
-                    this.state.left2.setValue(gestureState.dx+30)
+                    if (this.props.dataSlot0 < listLength) {
+                      this.state.left0.setValue(width+gestureState.dx+30)
+                      this.state.left2.setValue(gestureState.dx+30)
+                    }
                   }
                 }
                 break;
@@ -116,18 +123,20 @@ class NewsDetail extends Component {
                 }
               } else {
                 if ((this.state.dx < -width/3)||(gestureState.vx< -1.5)) {
-                  this.setState({index2: 1,index1: 2,index0: 3},() => {
-                    setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
-                  })
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  this.state.left2.setValue(width)
+                  if (this.props.dataSlot0 +1 < listLength) {
+                    this.setState({index2: 1,index1: 2,index0: 3},() => {
+                      setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
+                    })
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    this.state.left2.setValue(width)
+                  }
                 } else {
                   Animated.timing(
                     this.state.left0,
@@ -170,19 +179,21 @@ class NewsDetail extends Component {
                 }
               } else {
                 if ((this.state.dx < -width/3)||(gestureState.vx< -1.5)) {
-                  this.setState({index0: 1,index2: 2,index1: 3},() => {
-                    setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
+                  if (this.props.dataSlot0 +2 < listLength) {
+                    this.setState({index0: 1,index2: 2,index1: 3},() => {
+                      setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
 
-                  })
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  this.state.left0.setValue(width)
+                    })
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    this.state.left0.setValue(width)
+                  }
                 } else {
                   Animated.timing(
                     this.state.left1,
@@ -225,19 +236,21 @@ class NewsDetail extends Component {
                 }
               } else {
                 if ((this.state.dx < -width/3)||(gestureState.vx< -1.5)) {
-                  this.setState({index1: 1,index0: 2,index2: 3},() => {
-                    setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
+                  if (this.props.dataSlot0 < listLength) {
+                    this.setState({index1: 1,index0: 2,index2: 3},() => {
+                      setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
 
-                  })
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  this.state.left1.setValue(width)
+                    })
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    this.state.left1.setValue(width)
+                  }
                 } else {
                   Animated.timing(
                     this.state.left2,

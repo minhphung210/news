@@ -42,15 +42,16 @@ export default class ReadOffline extends React.Component {
     }
 
     render() {
-        let source = { uri: '/Users/minh/Library/Developer/CoreSimulator/Devices/079FD2DE-1D16-4050-8C15-0D2A326E702F/data/Containers/Data/Application/05F47666-CCA2-4780-BD9E-4FE713722C54/Documents/test.pdf' };
-        //let source = {uri:'bundle-assets://test.pdf'}; 
-        //let source = require('./test.pdf'); //ios only 
-        //let source = {uri:"data:application/pdf;base64, ..."}; // this is a dummy 
+        let source = { uri: '/Users/Macbook/Library/Developer/CoreSimulator/Devices/998FB079-4CB2-42DF-9DCC-96A462CBF0FD/data/Containers/Data/Application/2292D0EE-E1A9-422B-B426-AF9C2D9528DE/Documents/test.pdf' };
+        //let source = {uri:'bundle-assets://test.pdf'};
+        //let source = require('./test.pdf'); //ios only
+        //let source = {uri:"data:application/pdf;base64, ..."}; // this is a dummy
 
         return (
                 <Pdf ref={(pdf) => { this.pdf = pdf; }}
                     source={source}
                     page={1}
+                    scale={1.5}
                     horizontal={false}
                     /* onLoadComplete={(pageCount) => {
                          this.setState({ pageCount: pageCount });

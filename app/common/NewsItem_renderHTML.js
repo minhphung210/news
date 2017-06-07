@@ -18,8 +18,6 @@ const cheerio = require('cheerio-without-node-native');
 import * as Animatable from 'react-native-animatable';
 var Toast = require('react-native-toast');
 
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-
 import { connect } from 'react-redux';
 import { changeFontSize, changeModalState } from '../actions';
 var WEBVIEW_REF = 'webview';
@@ -29,38 +27,54 @@ class NewsItem extends Component {
     html: '',
     openMenu: false,
     bookMark: [],
-    bodyHTML: '',
-    headHTML: '',
+    baseHTML: '',
     isSaved: false,
     textSelected: '',
     loading: false,
     videoUrl: null
   };
   componentWillMount() {
-    this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
+    this.setState({thisUrl: this.props.row.url},()=>this.fetchContent(this.props.row)1)
   }
   componentWillReceiveProps(props) {
     if(props.row != this.props.row) {
-      this.setState({ thisUrl: props.row.url})
+      this.setState({ videoUrl: null, thisUrl: props.row.url},()=>{
+        console.log('reset videoUrl')
+        this.fetchContent(props.row)
+      })
     }
   }
-  createPDF() {
-    var options = {
-      html: this.state.html, // HTML String
+  fetchContent(row) {
+    this.setState({ loading: true })
+    let url = row.url
+    let other = []
+    fetch(row.url)
+      .then((response) => response.text())
+      .then((responseData) => {
+        $ = cheerio.load(responseData)
+        this.setState({ baseHTML: $('body').html() }, () => {
+          this.updateWebview(row)
+        })
+        $('#box_tinkhac_detail> div>ul> li').each(function () {
+          other.push({
+            url: $(this).find('h2').find('a').attr('href'),
+            title: $(this).find('h2').find('a').text(),
+            thumb: $(this).find('div').find('a').find('img').attr('src')
 
-      // ****************** OPTIONS BELOW WILL NOT WORK ON ANDROID **************
-      fileName: 'test',
-      directory: 'docs',
-      base64: true,
-      height: 2200,
-      width: width,
-      padding: 24,
-    };
-
-    RNHTMLtoPDF.convert(options).then((data) => {
-      console.log(data.filePath)
-    });
+          })
+        })
+      })
   }
+  updateWebview(row) {
+    this.setState({
+      html:
+      `<div>
+          <img class="cover" src=${row.thumb}/>
+          ${this.state.baseHTML + this.returnHtml()}
+          </div>
+        `}, () => { this.setState({ loading: false }) })
+  }
+  // <h1 class="title">${row.title}</h1>
   _share() {
     Share.share({
       message: this.props.row.title,
@@ -97,74 +111,6 @@ class NewsItem extends Component {
         console.log('Don\'t know how to open URI: ' + this.props.row.url);
       }
     });
-  }
-  fetchContent(row) {
-    this.setState({ loading: true })
-    let url = row.url
-    let other = []
-    fetch(row.url)
-      .then((response) => response.text())
-      .then((responseData) => {
-        $ = cheerio.load(responseData)
-        this.setState({ bodyHTML: $('body').html() }, () => {
-          this.setState({ headHTML: $('head').html() },()=>{
-            this.updateWebview(row)
-          })
-        })
-        // $('#box_tinkhac_detail> div>ul> li').each(function () {
-        //   other.push({
-        //     url: $(this).find('h2').find('a').attr('href'),
-        //     title: $(this).find('h2').find('a').text(),
-        //     thumb: $(this).find('div').find('a').find('img').attr('src')
-        //
-        //   })
-        // })
-      })
-  }
-  // injectedJavaScript='
-  // if(!quackKhanh){
-  //   var quackKhanh = true;
-  //   $("body").prepend("<img src=`http://img.f31.vnecdn.net/2017/06/06/ransanchuot-1496740480.jpg`/>");
-  // }
-  // $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,
-  // .breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,
-  // #box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,
-  // .div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,
-  // #headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
-  // var link = document.querySelectorAll("a");
-  // for(var i = 0; i < link.length; i++){
-  //   link[i].setAttribute("href", "javascript:void(0)");
-  // };
-  //
-  // function getSelectionText() {
-  //     var text = "";
-  //     var activeEl = document.activeElement;
-  //     var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-  //     if (
-  //       (activeElTagName == "textarea") || (activeElTagName == "input" &&
-  //       /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
-  //       (typeof activeEl.selectionStart == "number")
-  //     ) {
-  //         text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-  //     } else if (window.getSelection) {
-  //         text = window.getSelection().toString();
-  //     }
-  //     return text;
-  // }
-  //
-  // document.onmouseup = document.onkeyup = document.onselectionchange = function() {
-  //   window.postMessageNative(getSelectionText());
-  // };
-  // '
-  updateWebview(row) {
-    this.setState({
-      html:
-          `<html>
-          ${this.state.headHTML}
-          <img class="cover" src=${row.thumb}/>
-          ${this.state.bodyHTML + this.returnHtml()}
-          </html>
-        `}, () => { this.setState({ loading: false }) })
   }
   returnHtml = () => {
     let htmlPlus = `
@@ -231,9 +177,8 @@ class NewsItem extends Component {
     </style>
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script>
-    $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
-
-    var link = document.querySelectorAll("a");
+      $(".block_tag.width_common.space_bottom_20,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,#topbar,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,#menu-box,#header_web,.start.have_cap2,.cap2,.relative_new,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right").remove();
+      var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
         link[i].setAttribute("href", "javascript:void(0)");
       };
@@ -261,17 +206,19 @@ class NewsItem extends Component {
     `;
     return htmlPlus
   }
+
+
   reloadWebview = () => {
     this.refs[WEBVIEW_REF].reload();
   };
 
   loading() {
     if (!this.state.loading) {
-      console.log(this.props.row.thumb)
       return (
           <WebView
             ref={WEBVIEW_REF}
             style={{ width: width, height: height-50, backgroundColor: 'grey' }}
+            javaScriptEnabled={true}
             onMessage={(event) => { this.setState({ textSelected: event.nativeEvent.data }) }}
             source={{ html: this.state.html }} />
       )
@@ -287,21 +234,44 @@ class NewsItem extends Component {
   // style={{ width: width, height: 200 }}
   // source={{ url: this.state.videoUrl }}/>
   // }
-  // <WebView
-  // style={{ height: 0, width: 0 }}
-  // injectedJavaScript='
-  // var x = $(".parser_player_vnexpress").attr("src");
-  // window.postMessageNative(x)
-  // '
-  // onMessage={(event) => {
-  //   if((this.state.videoUrl == null)&&(event.nativeEvent.data != null)){
-  //     this.setState({videoUrl: event.nativeEvent.data},()=>console.log('update url '+ this.state.videoUrl))
-  //   }
-  // }}
-  // source={{ url: this.state.thisUrl }} />
   render() {
     return (
       <View style={{ alignItems: 'center', flex: 1 }}>
+        <WebView
+        style={{ height: 0, width: 0 }}
+        injectedJavaScript='
+        var x = $(".parser_player_vnexpress").attr("src");
+        window.postMessageNative(x)
+        '
+        onMessage={(event) => {
+          if((this.state.videoUrl == null)&&(event.nativeEvent.data != null)){
+            this.setState({videoUrl: event.nativeEvent.data},()=>console.log('update url '+ this.state.videoUrl))
+          }
+        }}
+        source={{ url: this.state.thisUrl }} />
+        {(this.state.videoUrl != null)&&
+          <View style={{justifyContent: 'center', alignItems: 'center', backgroundColor: 'white'}}>
+            <Text>Bài viết có chứa video, để xem video, vui lòng chọn mở ở chế độ trình duyệt
+            </Text>
+            <TouchableOpacity
+            style={{borderColor: 'black', padding: 10, margin: 5, borderWidth: 1, borderRadius: 5}}
+            onPress={()=>{
+                  console.log(this.state.videoUrl);
+                  Linking.canOpenURL(this.state.videoUrl).then(supported => {
+                    if (supported) {
+                      Linking.openURL(this.state.videoUrl);
+                    } else {
+                      console.log('Don\'t know how to open URI: ' + this.state.videoUrl);
+                    }
+                  });
+                }}
+             >
+              <Text>
+                Mở Video
+              </Text>
+            </TouchableOpacity>
+          </View>
+        }
         {this.loading()}
         {this.props.openMenu &&
           <Animatable.View animation="slideInDown" duration={300} style={styles.menuModal}>
@@ -369,15 +339,6 @@ class NewsItem extends Component {
                       </Text>
               </View>
             </TouchableHighlight>
-            <TouchableOpacity
-              underlayColor="white"
-              onPress={() => this.createPDF()}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Lưu offline
-                      </Text>
-              </View>
-            </TouchableOpacity>
             <TouchableHighlight
               underlayColor="white"
               onPress={() => {
