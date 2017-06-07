@@ -37,11 +37,13 @@ class NewsItem extends Component {
     videoUrl: null
   };
   componentWillMount() {
-    this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
+    if(this.props.row){
+      this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
+    }
   }
   componentWillReceiveProps(props) {
-    if(props.row != this.props.row) {
-      this.setState({ thisUrl: props.row.url})
+    if((props.row != this.props.row)&&(props.row)) {
+      this.setState({ thisUrl: props.row.url},()=>{this.fetchContent(this.props.row)})
     }
   }
   createPDF() {
@@ -267,7 +269,6 @@ class NewsItem extends Component {
 
   loading() {
     if (!this.state.loading) {
-      console.log(this.props.row.thumb)
       return (
           <WebView
             ref={WEBVIEW_REF}

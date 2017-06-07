@@ -97,9 +97,7 @@ class NewsDetail extends Component {
                 if ((this.state.dx > width/3)||(gestureState.vx > 1.5)) {
                   if (this.props.dataSlot0 >0) {
                     this.setState({index2: 2,index1: 3,index0: 1},() => {
-                      if(this.props.dataSlot1>3) {
-                        setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
-                      }
+                      setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
                     })
                     Animated.timing(
                       this.state.left2,

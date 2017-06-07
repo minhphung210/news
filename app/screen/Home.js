@@ -154,7 +154,7 @@ class Home extends Component {
         this.setState({ dy: gestureState.dy})
       },
       onPanResponderRelease: (event, gestureState) => {
-        console.log(gestureState.vy)
+        console.log(this.state.bigData)
         switch (this.state.index0) {
           case 2:
               if(this.state.dy > 0) {
@@ -330,7 +330,9 @@ class Home extends Component {
     }
   toDetail(postId) {
     this.props.dispatch(selectedPost0(postId))
-    this.props.dispatch(selectedPost1(postId+1))
+    if(postId+1<this.state.bigData.length){
+      this.props.dispatch(selectedPost1(postId+1))
+    }
     this.props.dispatch(selectedPost2(postId-1))
     setTimeout(()=>{this.props.navigation.navigate('Detail_Screen')},300)
   }
