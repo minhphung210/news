@@ -166,7 +166,7 @@ class NewsItem extends Component {
           <img class="cover" src=${row.thumb}/>
           ${this.state.bodyHTML + this.returnHtml()}
           </html>
-        `}, () => { this.setState({ loading: false }) })
+        `},()=>this.setState({loading:false}))
   }
   returnHtml = () => {
     let htmlPlus = `
@@ -233,32 +233,35 @@ class NewsItem extends Component {
     </style>
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script>
+    $(document).ready(function(){
+      var messageHeight = {key:"heightContent",value:$(document).height()};
+      window.postMessageNative(JSON.stringify(messageHeight));
+    });
     $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
-
     var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
         link[i].setAttribute("href", "javascript:void(0)");
-      };
-
-      function getSelectionText() {
-          var text = "";
-          var activeEl = document.activeElement;
-          var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
-          if (
-            (activeElTagName == "textarea") || (activeElTagName == "input" &&
-            /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
-            (typeof activeEl.selectionStart == "number")
-          ) {
-              text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-          } else if (window.getSelection) {
-              text = window.getSelection().toString();
-          }
-          return text;
-      }
-
-      document.onmouseup = document.onkeyup = document.onselectionchange = function() {
-        window.postMessageNative(getSelectionText());
-      };
+    };
+    function getSelectionText() {
+        var text = "";
+        var activeEl = document.activeElement;
+        var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
+        if (
+          (activeElTagName == "textarea") || (activeElTagName == "input" &&
+          /^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
+          (typeof activeEl.selectionStart == "number")
+        ) {
+            text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
+        } else if (window.getSelection) {
+            text = window.getSelection().toString();
+        }
+        return text;
+    };
+    document.onmouseup = document.onkeyup = document.onselectionchange = function() {
+      var text = getSelectionText();
+      var messageText = {key:"textSelected",value:text};
+      window.postMessageNative(JSON.stringify(messageText));
+    };
     </script>
     `;
     return htmlPlus
@@ -266,14 +269,21 @@ class NewsItem extends Component {
   reloadWebview = () => {
     this.refs[WEBVIEW_REF].reload();
   };
-
+  handleMessageFromWebview(event) {
+    let message = JSON.parse(event.nativeEvent.data);
+    if(message.key == 'heightContent') {
+      this.setState({ heightContent: message.value},()=>console.log(this.state.heightContent))
+    } else {
+      this.setState({ textSelected: event.nativeEvent.data },()=>console.log(this.state.textSelected))
+    }
+  }
   loading() {
     if (!this.state.loading) {
       return (
           <WebView
             ref={WEBVIEW_REF}
             style={{ width: width, height: height-50, backgroundColor: 'grey' }}
-            onMessage={(event) => { this.setState({ textSelected: event.nativeEvent.data }) }}
+            onMessage={(event) => this.handleMessageFromWebview(event)}
             source={{ html: this.state.html }} />
       )
     } else {
