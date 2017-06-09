@@ -31,18 +31,21 @@ export const TeaNews = StackNavigator({
     screen: Home,
     navigationOptions: {
       header: null,
+      gesturesEnabled: false,
     }
   },
   Detail_Screen: {
     screen: NewsDetail,
     navigationOptions: {
       header: null,
+      gesturesEnabled: false,
     }
   },
   Category_Screen: {
     screen: Category,
     navigationOptions: {
       header: null,
+      gesturesEnabled: false,
     }
   },
   ReadOffline_Screen:{

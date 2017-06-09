@@ -45,6 +45,7 @@ class NewsDetail extends Component {
       onMoveShouldSetPanResponderCapture: (event, gestureState) => console.log(gestureState),
       onPanResponderGrant: (event, gestureState) => {},
       onPanResponderMove: (event, gestureState) => {
+        if((gestureState.x0<35)||(gestureState.x0>width-35)) {
           switch (this.state.index0) {
             case 2:
                 if (gestureState.dx > 30) {
@@ -88,17 +89,173 @@ class NewsDetail extends Component {
                 }
                 break;
           }
-          this.setState({ dx: gestureState.dx})
+          this.setState({ dx: gestureState.dx, canScrollPage: true})
+        } else {
+          this.setState({ canScrollPage: false})
+        }
       },
       onPanResponderRelease: (event, gestureState) => {
-        switch (this.state.index0) {
-          case 2:
-              if(this.state.dx > 0) {
-                if (this.state.dx > width/3) {
-                  if (this.props.dataSlot0 >0) {
-                    this.setState({index2: 2,index1: 3,index0: 1},() => {
-                      setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
+        if (this.state.canScrollPage) {
+          this.setState({ canScrollPage: false})
+          switch (this.state.index0) {
+            case 2:
+                if(this.state.dx > 0) {
+                  if (this.state.dx > width/3) {
+                    if (this.props.dataSlot0 >0) {
+                      this.setState({index2: 2,index1: 3,index0: 1},() => {
+                        setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
+                      })
+                      Animated.timing(
+                        this.state.left2,
+                        {toValue: 0, duration: 300}
+                      ).start();
+                      Animated.timing(
+                        this.state.left0,
+                        {toValue: width, duration: 300}
+                      ).start();
+                      this.state.left1.setValue(-width)
+                    }
+                  } else {
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                  }
+                } else {
+                  if (this.state.dx < -width/3) {
+                    if (this.props.dataSlot0 +1 < listLength) {
+                      this.setState({index2: 1,index1: 2,index0: 3},() => {
+                        setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
+                      })
+                      Animated.timing(
+                        this.state.left0,
+                        {toValue: -width, duration: 300}
+                      ).start();
+                      Animated.timing(
+                        this.state.left1,
+                        {toValue: 0, duration: 300}
+                      ).start();
+                      this.state.left2.setValue(width)
+                    }
+                  } else {
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: width, duration: 300}
+                    ).start();
+                  }
+                }
+                break;
+            case 3:
+                if(this.state.dx > 0) {
+                  if (this.state.dx > width/3) {
+                    this.setState({index0: 2,index2: 3,index1: 1},() => {
+                      if(this.props.dataSlot2>2) {
+                        setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 - 3))},310)
+
+                      }
                     })
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: width, duration: 300}
+                    ).start();
+                    this.state.left2.setValue(-width)
+                  } else {
+                    Animated.timing(
+                      this.state.left0,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                  }
+                } else {
+                  if (this.state.dx < -width/3) {
+                    if (this.props.dataSlot0 +2 < listLength) {
+                      this.setState({index0: 1,index2: 2,index1: 3},() => {
+                        setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
+
+                      })
+                      Animated.timing(
+                        this.state.left1,
+                        {toValue: -width, duration: 300}
+                      ).start();
+                      Animated.timing(
+                        this.state.left2,
+                        {toValue: 0, duration: 300}
+                      ).start();
+                      this.state.left0.setValue(width)
+                    }
+                  } else {
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: width, duration: 300}
+                    ).start();
+                  }
+                }
+                break;
+            case 1:
+                if(this.state.dx > 0) {
+                  if (this.state.dx > width/3) {
+                    this.setState({index1: 2,index0: 3,index2: 1},() => {
+                      if(this.props.dataSlot0>2) {
+                        setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 - 3))},310)
+
+                      }
+                    })
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                    this.state.left0.setValue(-width)
+                  } else {
+                    Animated.timing(
+                      this.state.left1,
+                      {toValue: -width, duration: 300}
+                    ).start();
+                    Animated.timing(
+                      this.state.left2,
+                      {toValue: 0, duration: 300}
+                    ).start();
+                  }
+                } else {
+                  if (this.state.dx < -width/3) {
+                    if (this.props.dataSlot0 < listLength) {
+                      this.setState({index1: 1,index0: 2,index2: 3},() => {
+                        setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
+
+                      })
+                      Animated.timing(
+                        this.state.left2,
+                        {toValue: -width, duration: 300}
+                      ).start();
+                      Animated.timing(
+                        this.state.left0,
+                        {toValue: 0, duration: 300}
+                      ).start();
+                      this.state.left1.setValue(width)
+                    }
+                  } else {
                     Animated.timing(
                       this.state.left2,
                       {toValue: 0, duration: 300}
@@ -107,162 +264,12 @@ class NewsDetail extends Component {
                       this.state.left0,
                       {toValue: width, duration: 300}
                     ).start();
-                    this.state.left1.setValue(-width)
                   }
-                } else {
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: 0, duration: 300}
-                  ).start();
                 }
-              } else {
-                if (this.state.dx < -width/3) {
-                  if (this.props.dataSlot0 +1 < listLength) {
-                    this.setState({index2: 1,index1: 2,index0: 3},() => {
-                      setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
-                    })
-                    Animated.timing(
-                      this.state.left0,
-                      {toValue: -width, duration: 300}
-                    ).start();
-                    Animated.timing(
-                      this.state.left1,
-                      {toValue: 0, duration: 300}
-                    ).start();
-                    this.state.left2.setValue(width)
-                  }
-                } else {
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: width, duration: 300}
-                  ).start();
-                }
-              }
-              break;
-          case 3:
-              if(this.state.dx > 0) {
-                if (this.state.dx > width/3) {
-                  this.setState({index0: 2,index2: 3,index1: 1},() => {
-                    if(this.props.dataSlot2>2) {
-                      setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 - 3))},310)
+                break;
+            default:
 
-                    }
-                  })
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: width, duration: 300}
-                  ).start();
-                  this.state.left2.setValue(-width)
-                } else {
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                }
-              } else {
-                if (this.state.dx < -width/3) {
-                  if (this.props.dataSlot0 +2 < listLength) {
-                    this.setState({index0: 1,index2: 2,index1: 3},() => {
-                      setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
-
-                    })
-                    Animated.timing(
-                      this.state.left1,
-                      {toValue: -width, duration: 300}
-                    ).start();
-                    Animated.timing(
-                      this.state.left2,
-                      {toValue: 0, duration: 300}
-                    ).start();
-                    this.state.left0.setValue(width)
-                  }
-                } else {
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: width, duration: 300}
-                  ).start();
-                }
-              }
-              break;
-          case 1:
-              if(this.state.dx > 0) {
-                if (this.state.dx > width/3) {
-                  this.setState({index1: 2,index0: 3,index2: 1},() => {
-                    if(this.props.dataSlot0>2) {
-                      setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 - 3))},310)
-
-                    }
-                  })
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  this.state.left0.setValue(-width)
-                } else {
-                  Animated.timing(
-                    this.state.left1,
-                    {toValue: -width, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                }
-              } else {
-                if (this.state.dx < -width/3) {
-                  if (this.props.dataSlot0 < listLength) {
-                    this.setState({index1: 1,index0: 2,index2: 3},() => {
-                      setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
-
-                    })
-                    Animated.timing(
-                      this.state.left2,
-                      {toValue: -width, duration: 300}
-                    ).start();
-                    Animated.timing(
-                      this.state.left0,
-                      {toValue: 0, duration: 300}
-                    ).start();
-                    this.state.left1.setValue(width)
-                  }
-                } else {
-                  Animated.timing(
-                    this.state.left2,
-                    {toValue: 0, duration: 300}
-                  ).start();
-                  Animated.timing(
-                    this.state.left0,
-                    {toValue: width, duration: 300}
-                  ).start();
-                }
-              }
-              break;
-          default:
-
+          }
         }
       }
     });
