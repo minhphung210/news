@@ -33,7 +33,7 @@ class NewsItem extends Component {
     headHTML: '',
     isSaved: false,
     textSelected: '',
-    loading: false,
+    loading: true,
     videoUrl: null,
     list :[]
   };
@@ -44,7 +44,7 @@ class NewsItem extends Component {
   }
   componentWillReceiveProps(props) {
     if((props.row != this.props.row)&&(props.row)) {
-      this.setState({ thisUrl: props.row.url},()=>{this.fetchContent(this.props.row)})
+      this.setState({ thisUrl: props.row.url, loading: true},()=>{this.fetchContent(this.props.row)})
     }
   }
   componentDidMount() {
@@ -184,27 +184,34 @@ class NewsItem extends Component {
   // };
   // '
   updateWebview(row) {
-    this.setState({
-      html:
-          `<html>
-          <head>${this.state.headHTML}</head>
-          <body>
-          <div style="position: relative">
-            <img class="cover" src=${row.thumb}/>
-            <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 5">
-              <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 10">${row.cate}</p>
+    var link = row.url;
+    var location1 = link.lastIndexOf("/");
+    var location2 = link.lastIndexOf("-");
+    var CoverImg = link.substr(location1+1 , location2-location1-1);
+    this.setState({ coverImg: CoverImg},()=>{
+      this.setState({
+        html:
+            `<html>
+            <head>${this.state.headHTML}</head>
+            <script>
+              $('img[alt=${CoverImg}]').remove();
+            </script>
+            <body>
+            <div style="position: relative">
+              <img class="cover" src=${row.thumb}/>
+              <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 5">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 10">${row.cate}</p>
+              </div>
+              <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
+              </div>
             </div>
-            <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
-              <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
-            </div>
-          </div>
-          ${this.state.bodyHTML + this.returnHtml()}
+            ${this.state.bodyHTML + this.returnHtml()}
 
-          </body>
-
-
-          </html>
-        `},()=>this.setState({loading:false}))
+            </body>
+            </html>
+          `})
+    })
   }
   returnHtml = () => {
     let htmlPlus = `
@@ -262,6 +269,10 @@ class NewsItem extends Component {
        .main_show_comment.width_common,.title_show.txt_666,#box_xemnhieunhat,#col_300{
         display: none
       }
+      iframe {
+        max-width:${width}px;
+        max-height:${width/16*9}px;
+      }
       html, body{
         width: ${width}px;
         overflow-x:hidden;
@@ -276,11 +287,14 @@ class NewsItem extends Component {
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script>
     $(document).ready(function(){
-      var messageHeight = {key:"heightContent",value:$(document).height()};
-      window.postMessageNative(JSON.stringify(messageHeight));
+      setTimeout(function(){
+        var messageHeight = {key:"heightContent",value:$(document).height()};
+        // alert($(document).height().toString())
+        window.postMessageNative(JSON.stringify(messageHeight));
+      },500)
     });
-
-   $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
+   $('img[alt=${this.state.coverImg}]').remove();
+   $(".block_filter_live,.desc_cation,.Image,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection,#WIDGET").remove();
 
     var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
@@ -317,7 +331,7 @@ class NewsItem extends Component {
     let message = JSON.parse(event.nativeEvent.data);
     switch (message.key) {
       case 'heightContent':
-        this.setState({ heightContent: message.value})
+        this.setState({ heightContent: message.value},()=>this.setState({ loading: false }))
         break;
       case 'textSelected':
         this.setState({ textSelected: message.value})
@@ -328,18 +342,12 @@ class NewsItem extends Component {
     }
   }
   loading() {
-    if (!this.state.loading) {
+    if (this.state.loading) {
       return (
-          <WebView
-            ref={WEBVIEW_REF}
-            style={{ width: width, height: height, backgroundColor: this.props.postBackground }}
-            onMessage={(event) => this.handleMessageFromWebview(event)}
-            source={{ html: this.state.html }} />
-      )
-    } else {
-      return (
-        <Text style={{ textAlign: 'center', alignSelf: 'center' }}>Loading...
-        </Text>
+        <View style={{justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 4, backgroundColor: 'white', width: width, height: height}}>
+          <Text>Loading...
+          </Text>
+        </View>
       )
     }
   }
@@ -363,6 +371,11 @@ class NewsItem extends Component {
   render() {
     return (
       <View style={{ alignItems: 'center', flex: 1 }}>
+        <WebView
+          ref={WEBVIEW_REF}
+          style={{ width: width, height: height, backgroundColor: this.props.postBackground }}
+          onMessage={(event) => this.handleMessageFromWebview(event)}
+          source={{ html: this.state.html }} />
         {this.loading()}
         {this.props.openMenu &&
           <TouchableOpacity style={styles.modalContainer} onPress={()=>this.props.dispatch(changeModalState(!this.props.openMenu))}>

@@ -23,7 +23,7 @@ import { connect } from 'react-redux';
 import { replaceListCate, reload } from '../actions';
 
 const numberOfItem = Math.floor(height/160);
-alert(height);
+
 class Home extends Component {
   static navigationOptions = {
     title: 'Tea News',
@@ -362,7 +362,7 @@ class Home extends Component {
             <TouchableOpacity onPress={() => this.props.navigation.navigate('ListNewsOffline_Screen')}>
               <View style={{ marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Text>
-                    đọc offline
+                       
                   </Text>
               </View>
             </TouchableOpacity>
