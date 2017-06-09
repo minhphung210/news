@@ -34,12 +34,25 @@ class NewsItem extends Component {
     isSaved: false,
     textSelected: '',
     loading: false,
-    videoUrl: null
+    videoUrl: null,
+    list:[],
   };
   componentWillMount() {
     if(this.props.row){
       this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
     }
+  }
+  componentDidMount() {
+    let list = this.state.list
+    AsyncStorage.getItem(`listOffline`, (err, result) => {
+      if (result !== null) {
+        list = JSON.parse(result)
+        this.setState({
+          list: list
+        })
+        console.log(list)
+      }
+    })
   }
   componentWillReceiveProps(props) {
     if((props.row != this.props.row)&&(props.row)) {
@@ -47,22 +60,36 @@ class NewsItem extends Component {
     }
   }
   createPDF() {
-    var options = {
-      html: this.state.html, // HTML String
+      let date = new Date()
+      let fileName = date.getTime()
+      let time = date.toString()
+      let list = this.state.list
+      var options = {
+        html: this.state.html, // HTML String
 
-      // ****************** OPTIONS BELOW WILL NOT WORK ON ANDROID **************
-      fileName: 'test',
-      directory: 'docs',
-      base64: true,
-      height: 2200,
-      width: width,
-      padding: 24,
-    };
+        // **************** OPTIONS BELOW WILL NOT WORK ON ANDROID ************
+        fileName: fileName.toString(),
+        directory: 'docs',
+        base64: true,
+        height: 2200,
+        width: width,
+        padding: 24,
+      };
 
-    RNHTMLtoPDF.convert(options).then((data) => {
-      console.log(data.filePath)
-    });
-  }
+      RNHTMLtoPDF.convert(options).then((data) => {
+        console.log(data.filePath)
+        list.push({
+          path: data.filePath,
+          time: time,
+          title: this.props.row.title,
+        })
+        this.setState({
+          list: list
+        })
+
+        AsyncStorage.setItem(`listOffline`, JSON.stringify(this.state.list))
+      });
+    }
   _share() {
     Share.share({
       message: this.props.row.title,

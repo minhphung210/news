@@ -20,29 +20,11 @@ export default class ReadOffline extends React.Component {
     }
 
     componentDidMount() {
-    }
-
-    prePage = () => {
-        if (this.pdf) {
-            let prePage = this.state.page > 1 ? this.state.page - 1 : 1;
-            this.pdf.setNativeProps({ page: prePage });
-            this.setState({ page: prePage });
-            console.log(`prePage: ${prePage}`);
-        }
-    }
-
-    nextPage = () => {
-        if (this.pdf) {
-            let nextPage = this.state.page + 1 > this.state.pageCount ? this.state.pageCount : this.state.page + 1;
-            this.pdf.setNativeProps({ page: nextPage });
-            this.setState({ page: nextPage });
-            console.log(`nextPage: ${nextPage}`);
-        }
-
+        console.log(this.props.navigation.state.params.data)
     }
 
     render() {
-        let source = { uri: '/Users/Macbook/Library/Developer/CoreSimulator/Devices/998FB079-4CB2-42DF-9DCC-96A462CBF0FD/data/Containers/Data/Application/2292D0EE-E1A9-422B-B426-AF9C2D9528DE/Documents/test.pdf' };
+        let source = { uri:this.props.navigation.state.params.data.path  };
         //let source = {uri:'bundle-assets://test.pdf'};
         //let source = require('./test.pdf'); //ios only
         //let source = {uri:"data:application/pdf;base64, ..."}; // this is a dummy
@@ -51,7 +33,7 @@ export default class ReadOffline extends React.Component {
                 <Pdf ref={(pdf) => { this.pdf = pdf; }}
                     source={source}
                     page={1}
-                    scale={1.5}
+                    scale={1}
                     horizontal={false}
                     /* onLoadComplete={(pageCount) => {
                          this.setState({ pageCount: pageCount });
@@ -88,7 +70,6 @@ const styles = StyleSheet.create({
         color: "#FFF",
     },
     pdf: {
-        width: width+20,
-        height: height,
+        flex:1
     }
 });

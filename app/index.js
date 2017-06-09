@@ -13,6 +13,7 @@ import NewsDetail from './screen/NewsDetail';
 import Category from './screen/Category';
 import ReadOffline from './screen/ReadOffline';
 import { StackNavigator } from 'react-navigation';
+import ListNewsOffline from './screen/ListNewsOffline';
 import * as Animatable from 'react-native-animatable';
 const {width, height} = Dimensions.get("window");
 // import * as firebase from 'firebase';
@@ -50,6 +51,9 @@ export const TeaNews = StackNavigator({
   },
   ReadOffline_Screen:{
     screen : ReadOffline
+  },
+  ListNewsOffline_Screen:{
+    screen : ListNewsOffline
   }
 })
 // export default class TeaNews extends Root {

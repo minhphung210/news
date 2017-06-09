@@ -359,10 +359,10 @@ class Home extends Component {
             <Image
             style={{width: 25, height: 25, marginLeft: 20}}
             source={require('../../img/navicon_menu.png')}/>
-            <TouchableOpacity onPress={() => this.props.navigation.navigate('ReadOffline_Screen')}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('ListNewsOffline_Screen')}>
               <View style={{ marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Text>
-
+                    đọc offline
                   </Text>
               </View>
             </TouchableOpacity>
