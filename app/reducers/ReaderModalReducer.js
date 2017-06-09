@@ -1,5 +1,5 @@
 import * as types from '../actions/types';
-const INITIAL_STATE = {modalState: false, fontSize: 14, postBackground: 'white', paddingLeft: 15};
+const INITIAL_STATE = {modalState: false, fontSize: 14, postBackground: 'white', textColor: 'black'};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -27,10 +27,10 @@ export default (state = INITIAL_STATE, action) => {
         postBackground: action.payload
       }
       break;
-    case types.CHANGE_PADDING_LEFT:
+    case types.CHANGE_TEXT_COLOR:
       return {
         ...state,
-        paddingLeft: action.payload
+        textColor: action.payload
       }
       break;
     default:

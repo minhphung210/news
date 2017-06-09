@@ -7,23 +7,31 @@ export default class NewsListItem extends Component {
       return (
         <TouchableOpacity
         onPress={this.props.onPress}
-        style={styles.container}>
-          <View style={styles.leftBox}>
-            <Image
-            style={{width: 150, height: 80}}
-            source={{ uri: this.props.thumb }}/>
-          </View>
-          <View style={styles.rightBox}>
-            <Text
-            numberOfLines={2}
-            ellipsizeMode="tail"
-            style={styles.title}>{this.props.title}
-            </Text>
-            <Text
-            numberOfLines={3}
-            ellipsizeMode="tail"
-            style={styles.date}>{this.props.description}
-            </Text>
+        style={{marginLeft: 15, marginTop: 15, backgroundColor: 'white'}}>
+          <Text
+          numberOfLines={2}
+          ellipsizeMode="tail"
+          style={styles.title}>{this.props.title}
+          </Text>
+          <Text style={{color: 'grey', fontSize: 13, marginBottom: 5}}>Vnexpress.net
+          </Text>
+          <View style={styles.container}>
+            <View style={styles.leftBox}>
+              <Image
+              style={{width: 100, height: 70}}
+              source={{ uri: this.props.thumb }}/>
+            </View>
+            <View style={styles.rightBox}>
+              <Text
+              numberOfLines={3}
+              ellipsizeMode="tail"
+              style={styles.description}>{this.props.description}
+              </Text>
+              <View style={[styles.category,{backgroundColor:this.props.cateColor}]}>
+                <Text style={styles.categoryText}>{this.props.cate}
+                </Text>
+              </View>
+            </View>
           </View>
         </TouchableOpacity>
       )
@@ -32,34 +40,42 @@ export default class NewsListItem extends Component {
 const styles={
   container: {
     width: '100%',
-    height: 90,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(199, 199, 199, 0.84)',
-    paddingLeft: 5,
     flexDirection: 'row'
   },
   leftBox: {
     justifyContent: 'center',
-    paddingTop: 5,
-    paddingBottom: 5,
-    width: '40%'
   },
   rightBox: {
     justifyContent: 'flex-start',
     alignItems: 'baseline',
-    padding: 5,
-    width: '60%'
+    paddingLeft: 10,
+    marginRight: 15,
+    justifyContent: 'center',
+    flex:1,
+    width: width - 130
   },
   title: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontSize: 15,
-    marginRight: 10
+    marginRight: 10,
+    marginBottom: 5
   },
-  date: {
+  description: {
     fontSize: 13,
-    color: 'grey'
+    color: 'black'
   },
   info1: {
     flexDirection: 'row'
+  },
+  category: {
+    borderRadius: 5,
+    marginTop: 3,
+  },
+  categoryText: {
+    padding: 3,
+    fontSize:13,
+    color: 'white',
+    fontWeight: '500',
+    borderRadius: 4
   }
 }

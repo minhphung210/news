@@ -16,13 +16,19 @@ class NewsItem2 extends Component {
             <Image
             source={{uri: this.props.data.thumb}}
             resizeMode="cover"
-            style={{height: 255, width: width}}/>
+            style={{height: (height>650) ? 300 : (height-350), width: width}}/>
+            <View style={[styles.category,{backgroundColor:this.props.data.cateColor}]}>
+              <Text style={styles.categoryText}>{this.props.data.cate}
+              </Text>
+            </View>
             <Text style={styles.title}>{this.props.data.title}
             </Text>
-            <Text style={styles.date}>{date.toLocaleString()}
+            <Text style={styles.date}>Vnexpress.net - {date.toLocaleString()}
             </Text>
-            <Text style={styles.description}>{this.props.data.des}
-            </Text>
+            <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text style={styles.description}>{this.props.data.des}
+              </Text>
+            </View>
         </TouchableOpacity>
       )
     } else { return <View></View>}
@@ -34,7 +40,7 @@ const styles={
     paddingLeft: 15,
     fontSize: 20,
     fontWeight: 'bold',
-    marginTop: 15,
+    marginTop: 10,
     lineHeight: 30
   },
   date: {
@@ -49,6 +55,21 @@ const styles={
     paddingLeft: 15,
     marginTop: 15,
     lineHeight: 30
+  },
+  category: {
+    borderRadius: 5,
+    marginLeft: 15,
+    marginTop: 10,
+    width: 80,
+    height: 25,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  categoryText: {
+    fontSize:13,
+    color: 'white',
+    fontWeight: '500',
+    borderRadius: 4
   }
 }
 const mapStateToProps = state => {

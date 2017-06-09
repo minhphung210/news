@@ -47,7 +47,8 @@ class RenderItem extends Component {
           } else {
             var cateInfo = {
               name: this.props.item.name,
-              link: this.props.item.link
+              link: this.props.item.link,
+              color: this.props.item.color
             }
             console.log(cateInfo)
             list.push(cateInfo)
@@ -61,7 +62,7 @@ class RenderItem extends Component {
         return (
                 <TouchableOpacity onPress={()=>this.saveCateToAsync()} >
                     <View style={[styles.item, { opacity: this.state.selected ? 0.2 : 1 }]}  >
-                        <Text>{this.props.item.name}</Text>
+                        <Text style={{fontSize: 12}}>{this.props.item.name}</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -70,13 +71,13 @@ class RenderItem extends Component {
 }
 const styles = StyleSheet.create({
     item: {
-        height: 30,
-        width: width/5+10,
-        borderWidth: 1,
-        borderRadius: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 20,
+      height: 20,
+      width: width/5+10,
+      borderWidth: 1,
+      borderRadius: 5,
+      justifyContent: 'center',
+      alignItems: 'center',
+      margin: 15
     },
 })
 const mapStateToProps = state => {

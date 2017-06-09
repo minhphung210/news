@@ -21,7 +21,7 @@ var Toast = require('react-native-toast');
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 import { connect } from 'react-redux';
-import { changeFontSize, changeModalState } from '../actions';
+import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor } from '../actions';
 var WEBVIEW_REF = 'webview';
 
 class NewsItem extends Component {
@@ -162,9 +162,22 @@ class NewsItem extends Component {
     this.setState({
       html:
           `<html>
-          ${this.state.headHTML}
-          <img class="cover" src=${row.thumb}/>
+          <head>${this.state.headHTML}</head>
+          <body>
+          <div style="position: relative">
+            <img class="cover" src=${row.thumb}/>
+            <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 5">
+              <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 10">${row.cate}</p>
+            </div>
+            <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
+              <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
+            </div>
+          </div>
           ${this.state.bodyHTML + this.returnHtml()}
+
+          </body>
+
+
           </html>
         `},()=>this.setState({loading:false}))
   }
@@ -188,11 +201,18 @@ class NewsItem extends Component {
       * {
         -webkit-touch-callout: none !important;
       }
-      h3, p, .block_timer_share{
-        margin-left: ${this.props.paddingLeft}px;
+      h1 {
+        margin-left: 20px;
+        margin-right: 10px;
+        font-size: ${this.props.fontSize + 3};
+        color: ${this.props.textColor};
+      }
+      h3, h2, p, .block_timer_share{
+        margin-left: 20px;
         line-height: 1.3em;
         margin-right: 10px;
-        font-size: ${this.props.fontSize}
+        font-size: ${this.props.fontSize};
+        color: ${this.props.textColor};
       }
       .minutes {
         width: 0!important
@@ -217,9 +237,6 @@ class NewsItem extends Component {
        .main_show_comment.width_common,.title_show.txt_666,#box_xemnhieunhat,#col_300{
         display: none
       }
-      h1{
-        margin-left: 10px;
-      }
       html, body{
         width: ${width}px;
         overflow-x:hidden;
@@ -237,7 +254,9 @@ class NewsItem extends Component {
       var messageHeight = {key:"heightContent",value:$(document).height()};
       window.postMessageNative(JSON.stringify(messageHeight));
     });
-    $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
+
+   $(".block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection").remove();
+
     var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
         link[i].setAttribute("href", "javascript:void(0)");
@@ -271,10 +290,16 @@ class NewsItem extends Component {
   };
   handleMessageFromWebview(event) {
     let message = JSON.parse(event.nativeEvent.data);
-    if(message.key == 'heightContent') {
-      this.setState({ heightContent: message.value},()=>console.log(this.state.heightContent))
-    } else {
-      this.setState({ textSelected: event.nativeEvent.data },()=>console.log(this.state.textSelected))
+    switch (message.key) {
+      case 'heightContent':
+        this.setState({ heightContent: message.value})
+        break;
+      case 'textSelected':
+        this.setState({ textSelected: message.value})
+        break;
+      case 'loadingState':
+        this.setState({ loading: true })
+        break;
     }
   }
   loading() {
@@ -282,7 +307,7 @@ class NewsItem extends Component {
       return (
           <WebView
             ref={WEBVIEW_REF}
-            style={{ width: width, height: height-50, backgroundColor: 'grey' }}
+            style={{ width: width, height: height, backgroundColor: this.props.postBackground }}
             onMessage={(event) => this.handleMessageFromWebview(event)}
             source={{ html: this.state.html }} />
       )
@@ -315,94 +340,122 @@ class NewsItem extends Component {
       <View style={{ alignItems: 'center', flex: 1 }}>
         {this.loading()}
         {this.props.openMenu &&
-          <Animatable.View animation="slideInDown" duration={300} style={styles.menuModal}>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => {
-                this.props.dispatch(changeFontSize(this.props.fontSize + 2));
-                setTimeout(() => {
-                  this.updateWebview(this.props.row)
+          <TouchableOpacity style={styles.modalContainer} onPress={()=>this.props.dispatch(changeModalState(!this.props.openMenu))}>
+            <Animatable.View animation="slideInDown" duration={300} style={styles.menuModal}>
+              <View style={{flexDirection: 'row', flex:1}}>
+                <TouchableHighlight
+                  underlayColor="white"
+                  onPress={() => {
+                    this.props.dispatch(changeFontSize(this.props.fontSize + 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
+                    if (Platform.OS === 'android') {
+                      setTimeout(() => this.reloadWebview(), 200)
+                    }
+                  }}
+                  style={[styles.modalItem,{borderRightWidth: 1, borderTopLeftRadius:10}]}>
+                  <View>
+                    <Text style={styles.modalText}>A+</Text>
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="white"
+                  onPress={() => {
+                    this.props.dispatch(changeFontSize(this.props.fontSize - 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
+                    if (Platform.OS === 'android') {
+                      setTimeout(() => this.reloadWebview(), 200)
+                    }
+                  }}
+                  style={[styles.modalItem,{borderTopRightRadius:10}]}>
+                  <View>
+                    <Text style={styles.modalText}>A-</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => {
+                  this._share();
                   this.props.dispatch(changeModalState(!this.props.openMenu))
-                }, 100)
-                if (Platform.OS === 'android') {
-                  setTimeout(() => this.reloadWebview(), 200)
-                }
-              }}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>A+</Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => {
-                this.props.dispatch(changeFontSize(this.props.fontSize - 2));
-                setTimeout(() => {
-                  this.updateWebview(this.props.row)
+                }}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={styles.modalText}>Share
+                        </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => this._openLink()}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={styles.modalText}>Mở trình duyệt
+                        </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => { this._saveBookmark(); this.props.dispatch(changeModalState(!this.props.openMenu)) }}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={styles.modalText}>Lưu
+                        </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableOpacity
+                underlayColor="white"
+                onPress={() => this.createPDF()}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={styles.modalText}>Lưu offline
+                        </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => {
+                  Clipboard.setString(this.props.row.url);
+                  Toast.show('Đã sao chép link');
                   this.props.dispatch(changeModalState(!this.props.openMenu))
-                }, 100)
-                if (Platform.OS === 'android') {
-                  setTimeout(() => this.reloadWebview(), 200)
-                }
-              }}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>A-</Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => {
-                this._share();
-                this.props.dispatch(changeModalState(!this.props.openMenu))
-              }}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Share
-                      </Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => this._openLink()}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Mở trình duyệt
-                      </Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => { this._saveBookmark(); this.props.dispatch(changeModalState(!this.props.openMenu)) }}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Lưu
-                      </Text>
-              </View>
-            </TouchableHighlight>
-            <TouchableOpacity
-              underlayColor="white"
-              onPress={() => this.createPDF()}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Lưu offline
-                      </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableHighlight
-              underlayColor="white"
-              onPress={() => {
-                Clipboard.setString(this.props.row.url);
-                Toast.show('Đã sao chép link');
-                this.props.dispatch(changeModalState(!this.props.openMenu))
-              }}
-              style={styles.modalItem}>
-              <View>
-                <Text style={styles.modalText}>Sao chép
-                      </Text>
-              </View>
-            </TouchableHighlight>
-          </Animatable.View>
+                }}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={styles.modalText}>Sao chép
+                        </Text>
+                </View>
+              </TouchableHighlight>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => {
+                  if(this.props.postBackground == 'white') {
+                    this.props.dispatch(changeTextColor('white'));
+                    this.props.dispatch(changeBackgroundColor('black'));
+                  } else {
+                    this.props.dispatch(changeTextColor('black'));
+                    this.props.dispatch(changeBackgroundColor('white'));
+                  }
+                  setTimeout(() => {
+                    this.updateWebview(this.props.row)
+                    this.props.dispatch(changeModalState(!this.props.openMenu))
+                  }, 100)
+                  if (Platform.OS === 'android') {
+                    setTimeout(() => this.reloadWebview(), 200)
+                  }
+                }}
+                style={[styles.modalItem,{borderBottomLeftRadius:10, borderBottomRightRadius:10, borderBottomWidth: 0}]}>
+                <View>
+                  <Text style={styles.modalText}>Chế độ đọc ban đêm
+                        </Text>
+                </View>
+              </TouchableHighlight>
+            </Animatable.View>
+          </TouchableOpacity>
         }
         {(this.state.textSelected != '') &&
           <Animatable.View animation="slideInUp" duration={300} style={styles.shareModal}>
@@ -471,7 +524,7 @@ const styles = {
       },
       android: {
         borderColor: 'rgb(217, 217, 217)',
-        borderLeftWidth: 0.5,
+        borderLeftWidth: 1,
         zIndex: 4
       }
     }),
@@ -481,38 +534,39 @@ const styles = {
     width: '100%'
   },
   modalItem: {
-    height: 35,
-    width: '100%',
     backgroundColor: 'white',
     borderColor: 'rgb(217, 217, 217)',
-    borderBottomWidth: 0.5,
-    alignItems: 'center',
-    justifyContent: 'center'
+    borderBottomWidth: 1,
+    justifyContent: 'center',
+    flex:1
+  },
+  modalText: {
+    paddingLeft: 20
   },
   menuModal: {
-    position: 'absolute',
-    ...Platform.select({
-      ios: {
-        zIndex: 3,
-      },
-      android: {
-        borderColor: 'rgb(217, 217, 217)',
-        borderLeftWidth: 0.5,
-      }
-    }),
-    top: 5,
-    right: 0,
-    width: 100,
     elevation: 5,
-    shadowOpacity: 0.3
+    top: 60,
+    right: 20,
+    marginLeft: width/3,
+    shadowOpacity: 0.3,
+    borderRadius: 30,
+    height: 250
   },
+  modalContainer: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.39)',
+    position: 'absolute',
+    zIndex: 3,
+
+  }
 }
 const mapStateToProps = state => {
   return {
     openMenu: state.readerModalReducer.modalState,
     fontSize: state.readerModalReducer.fontSize,
     postBackground: state.readerModalReducer.postBackground,
-    paddingLeft: state.readerModalReducer.paddingLeft
+    textColor: state.readerModalReducer.textColor
   }
 }
 export default connect(mapStateToProps)(NewsItem);

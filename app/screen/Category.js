@@ -11,15 +11,15 @@ import {
 import RenderItem from '../common/RenderItem.js'
 const { height, width } = Dimensions.get('window')
 const Item = [
-    { name: 'Thể thao', link: 'http://vnexpress.net/rss/the-thao.rss' },
-    { name: 'Thế giới', link: 'http://vnexpress.net/rss/the-gioi.rss' },
-    { name: 'Thời sự', link: 'http://vnexpress.net/rss/thoi-su.rss' },
-    { name: 'Sức khoẻ', link: 'http://vnexpress.net/rss/suc-khoe.rss' },
-    { name: 'Kinh doanh', link: 'http://vnexpress.net/rss/kinh-doanh.rss' },
-    { name: 'Pháp luật', link: 'http://vnexpress.net/rss/phap-luat.rss' },
-    { name: 'Xe', link: 'http://vnexpress.net/rss/oto-xe-may.rss' },
-    { name: 'Khoa học', link: 'http://vnexpress.net/rss/khoa-hoc.rss' },
-    { name: 'Du lịch', link: 'http://vnexpress.net/rss/du-lich.rss' },
+    { name: 'Thể thao', link: 'http://vnexpress.net/rss/the-thao.rss', color: 'rgb(117, 198, 67)' },
+    { name: 'Thế giới', link: 'http://vnexpress.net/rss/the-gioi.rss', color: 'rgb(102, 142, 209)' },
+    { name: 'Thời sự', link: 'http://vnexpress.net/rss/thoi-su.rss', color: 'rgb(221, 85, 85)' },
+    { name: 'Sức khoẻ', link: 'http://vnexpress.net/rss/suc-khoe.rss', color: 'rgb(77, 205, 174)' },
+    { name: 'Kinh doanh', link: 'http://vnexpress.net/rss/kinh-doanh.rss', color: 'rgb(245, 228, 113)' },
+    { name: 'Pháp luật', link: 'http://vnexpress.net/rss/phap-luat.rss', color: 'rgb(134, 134, 134)' },
+    { name: 'Xe', link: 'http://vnexpress.net/rss/oto-xe-may.rss', color: 'rgb(2, 5, 17)' },
+    { name: 'Khoa học', link: 'http://vnexpress.net/rss/khoa-hoc.rss', color: 'rgb(187, 67, 198)' },
+    { name: 'Du lịch', link: 'http://vnexpress.net/rss/du-lich.rss', color: 'rgb(213, 181, 110)' },
 ]
 import { connect } from 'react-redux';
 import { addCate, replaceListCate, reload } from '../actions';

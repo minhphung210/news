@@ -22,6 +22,8 @@ import { loadListData, selectedPost0, selectedPost1, selectedPost2 } from '../ac
 import { connect } from 'react-redux';
 import { replaceListCate, reload } from '../actions';
 
+const numberOfItem = Math.floor(height/160);
+alert(height);
 class Home extends Component {
   static navigationOptions = {
     title: 'Tea News',
@@ -73,7 +75,7 @@ class Home extends Component {
                 this.setState({...newObj},()=>{
                     let arrPromise = listCate.map((val, index) =>{
                       return new Promise((resolve, reject)=>{
-                        this.fetchData(val.link,index, resolve)
+                        this.fetchData(val.link,val.name,val.color ,index, resolve)
                       })
                     })
                     Promise.all(arrPromise).then(()=>{
@@ -136,7 +138,7 @@ class Home extends Component {
               if (gestureState.dy > 0) {
                 this.state.top0.setValue(-height+gestureState.dy)
               } else {
-                if (this.state.dataSlot0 + 6 < this.state.bigData.length) {
+                if (this.state.dataSlot0 + numberOfItem + 1 < this.state.bigData.length) {
                   this.state.top1.setValue(gestureState.dy)
                 }
               }
@@ -158,11 +160,11 @@ class Home extends Component {
         switch (this.state.index0) {
           case 2:
               if(this.state.dy > 0) {
-                if ((this.state.dy > height/3)||(gestureState.vy > 1.5)) {
+                if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   if (this.state.dataSlot0 >0) {
                     this.setState({index2: 2,index1: 3,index0: 1},() => {
-                      if(this.state.dataSlot1>7) {
-                        this.setState({dataSlot1: this.state.dataSlot1 - 7})
+                      if(this.state.dataSlot1>numberOfItem +2) {
+                        this.setState({dataSlot1: this.state.dataSlot1 - numberOfItem -2})
                       }
                     })
                     Animated.timing(
@@ -178,10 +180,10 @@ class Home extends Component {
                   ).start();
                 }
               } else {
-                if ((this.state.dy < -height/3)||(gestureState.vy< -1.5)) {
+                if ((this.state.dy < -height/3)||(gestureState.vy< -1.3)) {
                   if (this.state.dataSlot0 +1 < this.state.bigData.length) {
                     this.setState({index2: 1,index1: 2,index0: 3},() => {
-                      this.setState({dataSlot2: this.state.dataSlot2 + 7})
+                      this.setState({dataSlot2: this.state.dataSlot2 + numberOfItem + 2})
                     })
                     Animated.timing(
                       this.state.top0,
@@ -199,10 +201,10 @@ class Home extends Component {
               break;
           case 3:
               if(this.state.dy > 0) {
-                if ((this.state.dy > height/3)||(gestureState.vy > 1.5)) {
+                if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   this.setState({index0: 2,index2: 3,index1: 1},() => {
-                    if(this.state.dataSlot2>7) {
-                      this.setState({dataSlot2: this.state.dataSlot2 - 7})
+                    if(this.state.dataSlot2>numberOfItem +2) {
+                      this.setState({dataSlot2: this.state.dataSlot2 - numberOfItem -2})
                     }
                   })
                   Animated.timing(
@@ -217,10 +219,10 @@ class Home extends Component {
                   ).start();
                 }
               } else {
-                if ((this.state.dy < -height/3)||(gestureState.vy< -1.5)) {
-                  if (this.state.dataSlot0 + 6 < this.state.bigData.length) {
+                if ((this.state.dy < -height/3)||(gestureState.vy< -1.3)) {
+                  if (this.state.dataSlot0 + numberOfItem + 1 < this.state.bigData.length) {
                     this.setState({index0: 1,index2: 2,index1: 3},() => {
-                      this.setState({dataSlot0: this.state.dataSlot0 + 7})
+                      this.setState({dataSlot0: this.state.dataSlot0 + numberOfItem + 2})
                     })
                     Animated.timing(
                       this.state.top1,
@@ -238,10 +240,10 @@ class Home extends Component {
               break;
           case 1:
               if(this.state.dy > 0) {
-                if ((this.state.dy > height/3)||(gestureState.vy > 1.5)) {
+                if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   this.setState({index1: 2,index0: 3,index2: 1},() => {
-                    if(this.state.dataSlot0>7) {
-                      this.setState({dataSlot0: this.state.dataSlot0 - 7})
+                    if(this.state.dataSlot0>numberOfItem +2) {
+                      this.setState({dataSlot0: this.state.dataSlot0 - numberOfItem -2})
                     }
                   })
                   Animated.timing(
@@ -259,7 +261,7 @@ class Home extends Component {
                 if ((this.state.dy < -height/3)||(gestureState.vy< -1.5)) {
                   if (this.state.dataSlot0< this.state.bigData.length) {
                     this.setState({index1: 1,index0: 2,index2: 3},() => {
-                      this.setState({dataSlot1: this.state.dataSlot1 + 7})
+                      this.setState({dataSlot1: this.state.dataSlot1 + numberOfItem + 2})
                     })
                     Animated.timing(
                       this.state.top2,
@@ -296,7 +298,8 @@ class Home extends Component {
   componentDidMount() {
 
   }
-  fetchData(linkRSS,i, callback) {
+  fetchData(linkRSS,cate,cateColor,i, callback) {
+    console.log(cateColor)
         let data = this.state["data"+i]
         fetch(linkRSS)
             .then((response) => response.text())
@@ -312,13 +315,15 @@ class Home extends Component {
                   let vitribatdauDes = CDATA.search('</br>')
                   let vitriketthucDes = CDATA.search(']]>')
                   let url = $(this).find('link').text()
-                  if((url.includes('http://vnexpress.net/projects')== false)&&(CDATA.includes('No Description')==false)){
+                  if((url.includes('http://vnexpress.net/projects')== false)&&(url.includes('http://vnexpress.net/infographics')== false)&&(CDATA.includes('No Description')==false)&&(url.includes('/tu-van/')== false)){
                       data.push({
                           title:$(this).find('title').text(),
                           thumb : CDATA.slice(vitribatdau +5 , vitriketthuc-1).replace("_180x108",""),
                           des: CDATA.slice(vitribatdauDes+5 , vitriketthucDes),
                           url:url,
-                          date: new Date($(this).find('pubDate').text()).getTime()
+                          date: new Date($(this).find('pubDate').text()).getTime(),
+                          cate: cate,
+                          cateColor: cateColor
                       })
                     }
                 })
@@ -339,7 +344,7 @@ class Home extends Component {
   renderLoading() {
     if(this.props.listCate.length == 0) {
       return (
-        <View><Text>Hãy chọn Category --></Text></View>
+        <View><Text>   Hãy chọn Category --></Text></View>
       )
     } else {
       return (
@@ -357,7 +362,7 @@ class Home extends Component {
             <TouchableOpacity onPress={() => this.props.navigation.navigate('ReadOffline_Screen')}>
               <View style={{ marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Text>
-                  doc offline
+
                   </Text>
               </View>
             </TouchableOpacity>
@@ -386,7 +391,7 @@ class Home extends Component {
             {...this._panResponder.panHandlers}>
               <NewsList
               navigation={this.props.navigation}
-              data={this.state.bigData.slice(this.state.dataSlot1,this.state.dataSlot1+5)}
+              data={this.state.bigData.slice(this.state.dataSlot1,this.state.dataSlot1+numberOfItem)}
               dataIndex={this.state.dataSlot1}/>
             </Animated.View>
 

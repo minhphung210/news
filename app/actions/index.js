@@ -8,7 +8,7 @@ import {
   FONTSIZE_DEC,
   CHANGE_FONTSIZE,
   CHANGE_BACKGROUND_COLOR,
-  CHANGE_PADDING_LEFT,
+  CHANGE_TEXT_COLOR,
   ADD_CATE,
   REPLACE_LIST_CATE,
   RELOAD
@@ -57,10 +57,10 @@ export const changeBackgroundColor = (item) => {
     payload: item
   }
 }
-export const changePaddingLeft = (item) => {
+export const changeTextColor = (item) => {
   return {
-    type: CHANGE_PADDING_LEFT ,
-    paddingLeft: item
+    type: CHANGE_TEXT_COLOR ,
+    payload: item
   }
 }
 export const changeFontSize = (item) => {

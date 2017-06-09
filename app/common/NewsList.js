@@ -15,7 +15,7 @@ class NewsList extends Component {
   render() {
     if (this.props.data) {
       return (
-        <View style={[{ flex:1, height: height-50 },this.props.style]}>
+        <View style={[{ flex:1, width: width, height: height-50},this.props.style]}>
             {this.props.data.map((row,index)=>{
               return(
                 <NewsListItem
@@ -23,6 +23,8 @@ class NewsList extends Component {
                   title={row.title}
                   thumb={row.thumb}
                   description={row.des}
+                  cate={row.cate}
+                  cateColor={row.cateColor}
                   onPress={()=>this.toDetail(this.props.dataIndex+index)}
                 />
               )
