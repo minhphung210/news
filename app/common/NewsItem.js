@@ -9,7 +9,8 @@ import {
   Clipboard,
   ScrollView,
   AsyncStorage,
-  Alert
+  Alert,
+  Switch
 } from 'react-native';
 var { height, width } = Dimensions.get('window');
 import _ from 'lodash';
@@ -18,7 +19,7 @@ const cheerio = require('cheerio-without-node-native');
 import * as Animatable from 'react-native-animatable';
 var Toast = require('react-native-toast');
 
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
+// import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 import { connect } from 'react-redux';
 import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor } from '../actions';
@@ -35,7 +36,8 @@ class NewsItem extends Component {
     textSelected: '',
     loading: true,
     videoUrl: null,
-    list :[]
+    list :[],
+    switcher: false
   };
   componentWillMount() {
     if(this.props.row){
@@ -59,35 +61,35 @@ class NewsItem extends Component {
       }
     })
   }
-  createPDF() {
-      let date = new Date()
-      let fileName = date.getTime()
-      let time = date.toString()
-      let list = this.state.list
-      var options = {
-        html: this.state.html, // HTML String
-        // **************** OPTIONS BELOW WILL NOT WORK ON ANDROID ************
-        fileName: fileName.toString(),
-        directory: 'docs',
-        height: height-60,
-        width: width-20,
-        padding: 1
-      };
-
-      RNHTMLtoPDF.convert(options).then((data) => {
-        console.log(data.filePath)
-        list.push({
-          path: data.filePath,
-          time: time,
-          title: this.props.row.title,
-        })
-        this.setState({
-          list: list
-        })
-        console.log(list)
-        AsyncStorage.setItem(`listOffline`, JSON.stringify(this.state.list))
-      });
-    }
+  // createPDF() {
+  //     let date = new Date()
+  //     let fileName = date.getTime()
+  //     let time = date.toString()
+  //     let list = this.state.list
+  //     var options = {
+  //       html: this.state.html, // HTML String
+  //       // **************** OPTIONS BELOW WILL NOT WORK ON ANDROID ************
+  //       fileName: fileName.toString(),
+  //       directory: 'docs',
+  //       height: height-60,
+  //       width: width-20,
+  //       padding: 1
+  //     };
+  //
+  //     RNHTMLtoPDF.convert(options).then((data) => {
+  //       console.log(data.filePath)
+  //       list.push({
+  //         path: data.filePath,
+  //         time: time,
+  //         title: this.props.row.title,
+  //       })
+  //       this.setState({
+  //         list: list
+  //       })
+  //       console.log(list)
+  //       AsyncStorage.setItem(`listOffline`, JSON.stringify(this.state.list))
+  //     });
+  //   }
   _share() {
     Share.share({
       message: this.props.row.title,
@@ -126,7 +128,8 @@ class NewsItem extends Component {
     });
   }
   fetchContent(row) {
-    this.setState({ loading: true })
+    this.setState({ loading: true });
+    setTimeout(()=>this.setState({ loading: false }),5000);
     let url = row.url
     let other = []
     fetch(row.url)
@@ -198,9 +201,11 @@ class NewsItem extends Component {
             </script>
             <body>
             <div style="position: relative">
+              <div style="position:absolute; background-color: black; width: 100%; height: 100%; opacity: 0.3">
+              </div>
               <img class="cover" src=${row.thumb}/>
-              <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 5">
-                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 10">${row.cate}</p>
+              <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 4px">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 4px">${row.cate}</p>
               </div>
               <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
                 <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
@@ -368,11 +373,29 @@ class NewsItem extends Component {
   //   }
   // }}
   // source={{ url: this.state.thisUrl }} />
+  switcherPressed() {
+    if(this.props.postBackground == 'white') {
+      this.props.dispatch(changeTextColor('white'));
+      this.props.dispatch(changeBackgroundColor('black'));
+      this.setState({ switcher: true });
+    } else {
+      this.props.dispatch(changeTextColor('black'));
+      this.props.dispatch(changeBackgroundColor('white'));
+      this.setState({ switcher: false });
+    }
+    setTimeout(() => {
+      this.updateWebview(this.props.row)
+    }, 100)
+    if (Platform.OS === 'android') {
+      setTimeout(() => this.reloadWebview(), 200)
+    }
+  }
   render() {
     return (
       <View style={{ alignItems: 'center', flex: 1 }}>
         <WebView
           ref={WEBVIEW_REF}
+          scrollEnabled={this.props.disableScroll}
           style={{ width: width, height: height, backgroundColor: this.props.postBackground }}
           onMessage={(event) => this.handleMessageFromWebview(event)}
           source={{ html: this.state.html }} />
@@ -394,8 +417,8 @@ class NewsItem extends Component {
                     }
                   }}
                   style={[styles.modalItem,{borderRightWidth: 1, borderTopLeftRadius:10}]}>
-                  <View>
-                    <Text style={styles.modalText}>A+</Text>
+                  <View style={{alignItems: 'center'}}>
+                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>A</Text>
                   </View>
                 </TouchableHighlight>
                 <TouchableHighlight
@@ -411,50 +434,37 @@ class NewsItem extends Component {
                     }
                   }}
                   style={[styles.modalItem,{borderTopRightRadius:10}]}>
-                  <View>
-                    <Text style={styles.modalText}>A-</Text>
+                  <View style={{alignItems: 'center'}}>
+                    <Text>A</Text>
                   </View>
                 </TouchableHighlight>
               </View>
               <TouchableHighlight
                 underlayColor="white"
-                onPress={() => {
-                  this._share();
-                  this.props.dispatch(changeModalState(!this.props.openMenu))
-                }}
+                onPress={() => this.switcherPressed()}
                 style={styles.modalItem}>
-                <View>
-                  <Text style={styles.modalText}>Share
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 20}}>
+                  <Text style={styles.modalText}>Chế độ đọc ban đêm
                         </Text>
+                  <Switch
+                  value={this.state.switcher}
+                  onValueChange={()=>{
+                    this.setState({switcher: !this.state.switcher});
+                    this.switcherPressed()
+                  }}/>
                 </View>
               </TouchableHighlight>
+
               <TouchableHighlight
                 underlayColor="white"
                 onPress={() => this._openLink()}
                 style={styles.modalItem}>
                 <View>
-                  <Text style={styles.modalText}>Mở trình duyệt
+                  <Text style={styles.modalText}>Mở trong trình duyệt
                         </Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight
-                underlayColor="white"
-                onPress={() => { this._saveBookmark(); this.props.dispatch(changeModalState(!this.props.openMenu)) }}
-                style={styles.modalItem}>
-                <View>
-                  <Text style={styles.modalText}>Lưu
-                        </Text>
-                </View>
-              </TouchableHighlight>
-              <TouchableOpacity
-                underlayColor="white"
-                onPress={() => this.createPDF()}
-                style={styles.modalItem}>
-                <View>
-                  <Text style={styles.modalText}>Lưu offline
-                        </Text>
-                </View>
-              </TouchableOpacity>
+
               <TouchableHighlight
                 underlayColor="white"
                 onPress={() => {
@@ -462,36 +472,14 @@ class NewsItem extends Component {
                   Toast.show('Đã sao chép link');
                   this.props.dispatch(changeModalState(!this.props.openMenu))
                 }}
-                style={styles.modalItem}>
+                style={[styles.modalItem,{borderBottomLeftRadius:10, borderBottomRightRadius:10, borderBottomWidth: 0}]}
+                >
                 <View>
-                  <Text style={styles.modalText}>Sao chép
+                  <Text style={styles.modalText}>Sao chép link
                         </Text>
                 </View>
               </TouchableHighlight>
-              <TouchableHighlight
-                underlayColor="white"
-                onPress={() => {
-                  if(this.props.postBackground == 'white') {
-                    this.props.dispatch(changeTextColor('white'));
-                    this.props.dispatch(changeBackgroundColor('black'));
-                  } else {
-                    this.props.dispatch(changeTextColor('black'));
-                    this.props.dispatch(changeBackgroundColor('white'));
-                  }
-                  setTimeout(() => {
-                    this.updateWebview(this.props.row)
-                    this.props.dispatch(changeModalState(!this.props.openMenu))
-                  }, 100)
-                  if (Platform.OS === 'android') {
-                    setTimeout(() => this.reloadWebview(), 200)
-                  }
-                }}
-                style={[styles.modalItem,{borderBottomLeftRadius:10, borderBottomRightRadius:10, borderBottomWidth: 0}]}>
-                <View>
-                  <Text style={styles.modalText}>Chế độ đọc ban đêm
-                        </Text>
-                </View>
-              </TouchableHighlight>
+
             </Animatable.View>
           </TouchableOpacity>
         }
@@ -588,7 +576,7 @@ const styles = {
     marginLeft: width/3,
     shadowOpacity: 0.3,
     borderRadius: 30,
-    height: 250
+    height: 200
   },
   modalContainer: {
     width: '100%',
@@ -604,7 +592,8 @@ const mapStateToProps = state => {
     openMenu: state.readerModalReducer.modalState,
     fontSize: state.readerModalReducer.fontSize,
     postBackground: state.readerModalReducer.postBackground,
-    textColor: state.readerModalReducer.textColor
+    textColor: state.readerModalReducer.textColor,
+    disableScroll: state.readerModalReducer.disableScroll
   }
 }
 export default connect(mapStateToProps)(NewsItem);

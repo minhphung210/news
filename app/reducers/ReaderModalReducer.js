@@ -33,6 +33,18 @@ export default (state = INITIAL_STATE, action) => {
         textColor: action.payload
       }
       break;
+    case types.DISABLE_SCROLL:
+      return {
+        ...state,
+        disableScroll: action.payload
+      }
+      break;
+    case types.CHANGE_CURRENT_PAGE:
+      return {
+        ...state,
+        pageInfo: action.payload
+      }
+      break;
     default:
       return state
   }

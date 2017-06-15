@@ -11,7 +11,9 @@ import {
   CHANGE_TEXT_COLOR,
   ADD_CATE,
   REPLACE_LIST_CATE,
-  RELOAD
+  RELOAD,
+  DISABLE_SCROLL,
+  CHANGE_CURRENT_PAGE
 } from './types';
 
 
@@ -84,6 +86,18 @@ export const replaceListCate = (item) => {
 export const reload = (data) => {
   return {
     type: RELOAD,
+    payload: data
+  }
+}
+export const disableScrollWebview = (data) => {
+  return {
+    type: DISABLE_SCROLL,
+    payload: data
+  }
+}
+export const changeCurrentPage = (data) => {
+  return {
+    type: CHANGE_CURRENT_PAGE,
     payload: data
   }
 }

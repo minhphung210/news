@@ -11,7 +11,9 @@ import {
   Platform,
   TouchableHighlight,
   PanResponder,
-  Animated
+  Animated,
+  StatusBar,
+  Share
 } from 'react-native';
 var {height, width} = Dimensions.get('window');
 import * as Animatable from 'react-native-animatable';
@@ -21,7 +23,7 @@ const cheerio = require('cheerio-without-node-native');
 import { connect } from 'react-redux';
 import { changeModalState } from '../actions';
 import ViewPager from 'react-native-viewpager';
-import { selectedPost2, selectedPost1, selectedPost0 } from '../actions';
+import { selectedPost2, selectedPost1, selectedPost0, disableScrollWebview } from '../actions';
 
 class NewsDetail extends Component {
   constructor(props) {
@@ -35,17 +37,32 @@ class NewsDetail extends Component {
       index1: 1,
       index2: 3,
       dx: 0,
+      toTop: 1
     }
   };
   componentWillMount() {
     let listLength = this.props.listData.length;
+    var foo;
     this._panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: (event, gestureState) => {console.log(gestureState)},
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponderCapture: (event, gestureState) => console.log(gestureState),
-      onPanResponderGrant: (event, gestureState) => {},
+      onPanResponderGrant: (event, gestureState) => {
+        if (this.state.toTop >0) {
+          foo = this.state.toTop;
+        } else {
+          foo = 0;
+        }
+      },
       onPanResponderMove: (event, gestureState) => {
+        this.setState({ toTop: foo - gestureState.dy },()=>{
+          if(250> this.state.toTop > 0) {
+            this.setState({ navBarBackground: "rgba(0, 0, 0, 0." + Math.floor(this.state.toTop/250*10)+ ")"})
+          }
+        });
+
         if((gestureState.x0<35)||(gestureState.x0>width-35)) {
+          this.props.dispatch(disableScrollWebview(false));
           switch (this.state.index0) {
             case 2:
                 if (gestureState.dx > 30) {
@@ -95,14 +112,18 @@ class NewsDetail extends Component {
         }
       },
       onPanResponderRelease: (event, gestureState) => {
+        if(this.state.toTop < 0) {
+          this.setState({ toTop: 0 })
+        }
         if (this.state.canScrollPage) {
-          this.setState({ canScrollPage: false})
+          this.props.dispatch(disableScrollWebview(true));
+          this.setState({ canScrollPage: false })
           switch (this.state.index0) {
             case 2:
                 if(this.state.dx > 0) {
                   if (this.state.dx > width/3) {
                     if (this.props.dataSlot0 >0) {
-                      this.setState({index2: 2,index1: 3,index0: 1},() => {
+                      this.setState({index2: 2,index1: 3,index0: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
                       })
                       Animated.timing(
@@ -128,7 +149,7 @@ class NewsDetail extends Component {
                 } else {
                   if (this.state.dx < -width/3) {
                     if (this.props.dataSlot0 +1 < listLength) {
-                      this.setState({index2: 1,index1: 2,index0: 3},() => {
+                      this.setState({index2: 1,index1: 2,index0: 3, toTop: 0,navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
                       })
                       Animated.timing(
@@ -156,7 +177,7 @@ class NewsDetail extends Component {
             case 3:
                 if(this.state.dx > 0) {
                   if (this.state.dx > width/3) {
-                    this.setState({index0: 2,index2: 3,index1: 1},() => {
+                    this.setState({index0: 2,index2: 3,index1: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                       if(this.props.dataSlot2>2) {
                         setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 - 3))},310)
 
@@ -184,7 +205,7 @@ class NewsDetail extends Component {
                 } else {
                   if (this.state.dx < -width/3) {
                     if (this.props.dataSlot0 +2 < listLength) {
-                      this.setState({index0: 1,index2: 2,index1: 3},() => {
+                      this.setState({index0: 1,index2: 2,index1: 3, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
 
                       })
@@ -213,7 +234,7 @@ class NewsDetail extends Component {
             case 1:
                 if(this.state.dx > 0) {
                   if (this.state.dx > width/3) {
-                    this.setState({index1: 2,index0: 3,index2: 1},() => {
+                    this.setState({index1: 2,index0: 3,index2: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                       if(this.props.dataSlot0>2) {
                         setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 - 3))},310)
 
@@ -241,7 +262,7 @@ class NewsDetail extends Component {
                 } else {
                   if (this.state.dx < -width/3) {
                     if (this.props.dataSlot0 < listLength) {
-                      this.setState({index1: 1,index0: 2,index2: 3},() => {
+                      this.setState({index1: 1,index0: 2,index2: 3, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
 
                       })
@@ -274,24 +295,67 @@ class NewsDetail extends Component {
       }
     });
   }
-
+  shareLink() {
+    var page;
+    if (this.state.index0 == 2) {
+      page = this.props.listData[this.props.dataSlot0];
+    } else if (this.state.index1 == 2) {
+      page = this.props.listData[this.props.dataSlot1];
+    } else {
+      page = this.props.listData[this.props.dataSlot2];
+    }
+    Share.share({
+      message: page.title,
+      url: page.url,
+      title: 'From News App'
+    }, {
+        dialogTitle: 'From News App',
+        // excludedActivityTypes: [
+        //   'com.apple.UIKit.activity.PostToTwitter'
+        // ],
+        tintColor: 'green'
+      })
+      .then(this._showResult)
+      .catch((error) => this.setState({ result: 'error: ' + error.message }));
+  }
   render() {
     if (this.props.listData != 0) {
       return (
         <View style={{flex:1}}>
-        <View style={styles.navBar}>
+        <StatusBar
+         barStyle="light-content"
+        />
+        <View style={[styles.navBar,{backgroundColor: this.state.navBarBackground}]}>
             <TouchableHighlight
             onPress={()=>this.props.navigation.goBack()}
-            style={styles.navBarButton}>
-              <Text style={styles.navBarButtonText}>Back
-              </Text>
+            style={[styles.navBarButton,{marginLeft: 0}]}>
+              <Image
+              style={styles.iconNavBar}
+              source={require('../../img/ic_back.png')}/>
             </TouchableHighlight>
-            <TouchableHighlight
-            onPress={()=>this.props.dispatch(changeModalState(!this.props.openMenu))}
-            style={styles.navBarButton}>
-              <Text style={styles.navBarButtonText}>Menu
-              </Text>
-            </TouchableHighlight>
+            <View style={{flexDirection: 'row', alignSelf: 'flex-end'}}>
+                <TouchableHighlight
+                onPress={()=>this.shareLink()}
+                style={styles.navBarButton}>
+                  <Image
+                  style={styles.iconNavBar}
+                  source={require('../../img/ic_share.png')}/>
+                </TouchableHighlight>
+                <TouchableHighlight
+                onPress={()=>{}}
+                style={styles.navBarButton}>
+                  <Image
+                  style={styles.iconNavBar}
+                  source={require('../../img/ic_bookmark.png')}/>
+                </TouchableHighlight>
+                <TouchableHighlight
+                onPress={()=>this.props.dispatch(changeModalState(!this.props.openMenu))}
+                style={styles.navBarButton}>
+                  <Image
+                  style={styles.iconNavBar}
+                  source={require('../../img/ic_more-vertical.png')}/>
+                </TouchableHighlight>
+            </View>
         </View>
 
         <View style={{flex:1}}>
@@ -361,16 +425,22 @@ const styles = StyleSheet.create({
   },
   navBarButton: {
     backgroundColor: 'transparent',
-    width: 80,
+    width: 40,
     height: 40,
     justifyContent: 'flex-end',
-    paddingBottom: 10
+    paddingBottom: 10,
+    marginLeft: 15,
+    alignItems: 'center'
   },
   navBarButtonText: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center'
   },
+  iconNavBar: {
+    height: 25,
+    width: 25,
+  }
 });
 const mapStateToProps = state => {
    return {

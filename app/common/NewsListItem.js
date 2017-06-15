@@ -7,7 +7,7 @@ export default class NewsListItem extends Component {
       return (
         <TouchableOpacity
         onPress={this.props.onPress}
-        style={{marginLeft: 15, marginTop: 15, backgroundColor: 'white'}}>
+        style={{marginLeft: 15, marginTop: 15}}>
           <Text
           numberOfLines={2}
           ellipsizeMode="tail"

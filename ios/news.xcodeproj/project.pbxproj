@@ -38,7 +38,6 @@
 		30EA404C50AA48AE8D95C1E3 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FB7F1FEAF57847CFBC637DF8 /* libRNFetchBlob.a */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		DE67CF84A6624312931408E2 /* libRNHTMLtoPDF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F3BCB5B34C482FA9BD52F2 /* libRNHTMLtoPDF.a */; };
 		FB09CDE151EA4F27A3906DCF /* libRCTToast.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C413073D9864CF1B3EA5D60 /* libRCTToast.a */; };
 /* End PBXBuildFile section */
 
@@ -239,20 +238,6 @@
 			remoteGlobalIDString = 327633421BFAAD7E004DA88E;
 			remoteInfo = RCTToast;
 		};
-		BAFE10991EE7968F0051DC08 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 208E0F35BFB0474EAE23CC10 /* RNHTMLtoPDF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 117405EF1B9954BF004425E1;
-			remoteInfo = RNHTMLtoPDF;
-		};
-		BAFE109B1EE7968F0051DC08 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 208E0F35BFB0474EAE23CC10 /* RNHTMLtoPDF.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 117405FA1B9954BF004425E1;
-			remoteInfo = RNHTMLtoPDFTests;
-		};
 		FA36B7EB1EE815BB00A86175 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CD3B154DE6B741A4841051E8 /* RCTPdf.xcodeproj */;
@@ -289,8 +274,6 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = news/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = news/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
-		17F3BCB5B34C482FA9BD52F2 /* libRNHTMLtoPDF.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNHTMLtoPDF.a; sourceTree = "<group>"; };
-		208E0F35BFB0474EAE23CC10 /* RNHTMLtoPDF.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNHTMLtoPDF.xcodeproj; path = "../node_modules/react-native-html-to-pdf/ios/RNHTMLtoPDF.xcodeproj"; sourceTree = "<group>"; };
 		2B10F69F21B1437EB0184851 /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* news-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "news-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* news-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "news-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -328,7 +311,6 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				DE67CF84A6624312931408E2 /* libRNHTMLtoPDF.a in Frameworks */,
 				FB09CDE151EA4F27A3906DCF /* libRCTToast.a in Frameworks */,
 				2CCB0DDE5B244624BE6F790F /* libRCTPdf.a in Frameworks */,
 				30EA404C50AA48AE8D95C1E3 /* libRNFetchBlob.a in Frameworks */,
@@ -498,7 +480,6 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
-				208E0F35BFB0474EAE23CC10 /* RNHTMLtoPDF.xcodeproj */,
 				F4CEAB9232454E5BB8E36526 /* RCTToast.xcodeproj */,
 				CD3B154DE6B741A4841051E8 /* RCTPdf.xcodeproj */,
 				2B10F69F21B1437EB0184851 /* RNFetchBlob.xcodeproj */,
@@ -534,15 +515,6 @@
 				00E356EE1AD99517003FC87E /* newsTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* news-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* news-tvOSTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		BAFE10771EE7968E0051DC08 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				BAFE109A1EE7968F0051DC08 /* libRNHTMLtoPDF.a */,
-				BAFE109C1EE7968F0051DC08 /* RNHTMLtoPDFTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -742,10 +714,6 @@
 					ProductGroup = FA36B7DE1EE815BB00A86175 /* Products */;
 					ProjectRef = 2B10F69F21B1437EB0184851 /* RNFetchBlob.xcodeproj */;
 				},
-				{
-					ProductGroup = BAFE10771EE7968E0051DC08 /* Products */;
-					ProjectRef = 208E0F35BFB0474EAE23CC10 /* RNHTMLtoPDF.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -938,20 +906,6 @@
 			fileType = archive.ar;
 			path = libRCTToast.a;
 			remoteRef = BAFE108A1EE7968F0051DC08 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BAFE109A1EE7968F0051DC08 /* libRNHTMLtoPDF.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRNHTMLtoPDF.a;
-			remoteRef = BAFE10991EE7968F0051DC08 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BAFE109C1EE7968F0051DC08 /* RNHTMLtoPDFTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RNHTMLtoPDFTests.xctest;
-			remoteRef = BAFE109B1EE7968F0051DC08 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		FA36B7EC1EE815BB00A86175 /* libRCTPdf.a */ = {
@@ -1174,7 +1128,6 @@
 				DEVELOPMENT_TEAM = LEF3FKUF72;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-html-to-pdf/ios/RNHTMLtoPDF/**",
 					"$(SRCROOT)/../node_modules/@remobile/react-native-toast/ios/RCTToast",
 					"$(SRCROOT)/../node_modules/react-native-pdf/ios/RCTPdf/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
@@ -1199,7 +1152,6 @@
 				DEVELOPMENT_TEAM = LEF3FKUF72;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-html-to-pdf/ios/RNHTMLtoPDF/**",
 					"$(SRCROOT)/../node_modules/@remobile/react-native-toast/ios/RCTToast",
 					"$(SRCROOT)/../node_modules/react-native-pdf/ios/RCTPdf/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",

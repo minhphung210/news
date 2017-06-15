@@ -163,7 +163,7 @@ class Home extends Component {
                 if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   if (this.state.dataSlot0 >0) {
                     this.setState({index2: 2,index1: 3,index0: 1},() => {
-                      if(this.state.dataSlot1>numberOfItem +2) {
+                      if(this.state.dataSlot1>numberOfItem +1) {
                         this.setState({dataSlot1: this.state.dataSlot1 - numberOfItem -2})
                       }
                     })
@@ -203,7 +203,7 @@ class Home extends Component {
               if(this.state.dy > 0) {
                 if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   this.setState({index0: 2,index2: 3,index1: 1},() => {
-                    if(this.state.dataSlot2>numberOfItem +2) {
+                    if(this.state.dataSlot2>numberOfItem +1) {
                       this.setState({dataSlot2: this.state.dataSlot2 - numberOfItem -2})
                     }
                   })
@@ -242,7 +242,7 @@ class Home extends Component {
               if(this.state.dy > 0) {
                 if ((this.state.dy > height/3)||(gestureState.vy > 1.3)) {
                   this.setState({index1: 2,index0: 3,index2: 1},() => {
-                    if(this.state.dataSlot0>numberOfItem +2) {
+                    if(this.state.dataSlot0>numberOfItem +1) {
                       this.setState({dataSlot0: this.state.dataSlot0 - numberOfItem -2})
                     }
                   })
@@ -362,7 +362,7 @@ class Home extends Component {
             <TouchableOpacity onPress={() => this.props.navigation.navigate('ListNewsOffline_Screen')}>
               <View style={{ marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center' }}>
                 <Text>
-                       
+
                   </Text>
               </View>
             </TouchableOpacity>

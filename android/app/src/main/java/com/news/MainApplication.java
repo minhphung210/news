@@ -6,7 +6,6 @@ import com.facebook.react.ReactApplication;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import org.wonday.pdf.RCTPdfView;
 import com.remobile.toast.RCTToastPackage;
-import com.parkerdan.htmltopdf.RNHTMLtoPDFPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -29,8 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
           new MainReactPackage(),
             new RNFetchBlobPackage(),
             new RCTPdfView(),
-            new RCTToastPackage(),
-            new RNHTMLtoPDFPackage()
+            new RCTToastPackage()
       );
     }
   };
