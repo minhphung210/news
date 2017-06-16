@@ -7,13 +7,13 @@ export default class NewsListItem extends Component {
       return (
         <TouchableOpacity
         onPress={this.props.onPress}
-        style={{marginLeft: 15, marginTop: 15}}>
+        style={{marginLeft: 15, marginTop: 15, backgroundColor: this.props.postBackground}}>
           <Text
           numberOfLines={2}
           ellipsizeMode="tail"
-          style={styles.title}>{this.props.title}
+          style={[styles.title,{color: this.props.textColor}]}>{this.props.title}
           </Text>
-          <Text style={{color: 'grey', fontSize: 13, marginBottom: 5}}>Vnexpress.net
+          <Text style={{color: 'grey', fontSize: 13, marginBottom: 5, color: this.props.textColor}}>Vnexpress.net
           </Text>
           <View style={styles.container}>
             <View style={styles.leftBox}>
@@ -25,7 +25,7 @@ export default class NewsListItem extends Component {
               <Text
               numberOfLines={3}
               ellipsizeMode="tail"
-              style={styles.description}>{this.props.description}
+              style={[styles.description,{color: this.props.textColor}]}>{this.props.description}
               </Text>
               <View style={[styles.category,{backgroundColor:this.props.cateColor}]}>
                 <Text style={styles.categoryText}>{this.props.cate}

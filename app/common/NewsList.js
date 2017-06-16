@@ -15,7 +15,7 @@ class NewsList extends Component {
   render() {
     if (this.props.data) {
       return (
-        <View style={[{ flex:1, width: width, height: height-50},this.props.style]}>
+        <View style={[{ flex:1, width: width, height: height-50, backgroundColor: this.props.postBackground},this.props.style]}>
             {this.props.data.map((row,index)=>{
               return(
                 <NewsListItem
@@ -25,6 +25,8 @@ class NewsList extends Component {
                   description={row.des}
                   cate={row.cate}
                   cateColor={row.cateColor}
+                  postBackground={this.props.postBackground}
+                  textColor={this.props.textColor}
                   onPress={()=>this.toDetail(this.props.dataIndex+index)}
                 />
               )
@@ -37,6 +39,8 @@ class NewsList extends Component {
 // this.props.dataIndex+index
 const mapStateToProps = state => {
    return {
+     postBackground: state.readerModalReducer.postBackground,
+     textColor: state.readerModalReducer.textColor,
    }
 }
 export default connect(mapStateToProps)(NewsList);

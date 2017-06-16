@@ -13,3 +13,4 @@ export const ADD_CATE = 'ADD_CATE';
 export const RELOAD = 'RELOAD';
 export const DISABLE_SCROLL = 'DISABLE_SCROLL';
 export const CHANGE_CURRENT_PAGE = 'CHANGE_CURRENT_PAGE';
+export const CHANGE_NIGHT_MODE = 'CHANGE_NIGHT_MODE';

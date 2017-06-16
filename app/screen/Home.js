@@ -354,10 +354,10 @@ class Home extends Component {
   }
   render() {
     return (
-      <View style={{flex:1}}>
-        <View style={styles.navBarContainer}>
+      <View style={{flex:1, backgroundColor: this.props.postBackground}}>
+        <View style={[styles.navBarContainer,{backgroundColor: this.props.postBackground}]}>
             <Image
-            style={{width: 25, height: 25, marginLeft: 20}}
+            style={{width: 25, height: 25, marginLeft: 20, tintColor: this.props.textColor}}
             source={require('../../img/navicon_menu.png')}/>
             <TouchableOpacity onPress={() => this.props.navigation.navigate('ListNewsOffline_Screen')}>
               <View style={{ marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center' }}>
@@ -368,7 +368,7 @@ class Home extends Component {
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>this.props.navigation.navigate('Category_Screen')}>
               <View style={{marginRight: 20, height: 30, width: 100, alignItems: 'flex-end', justifyContent: 'center'}}>
-                <Text>
+                <Text style={{color: this.props.textColor}}>
                   Chọn Cate
                 </Text>
               </View>
@@ -436,7 +436,9 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => {
    return {
      listCate: state.listCateReducer.list,
-     reload: state.listCateReducer.reload
+     reload: state.listCateReducer.reload,
+     postBackground: state.readerModalReducer.postBackground,
+     textColor: state.readerModalReducer.textColor,
    }
 }
 export default connect(mapStateToProps)(Home);

@@ -22,7 +22,7 @@ var Toast = require('react-native-toast');
 // import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 import { connect } from 'react-redux';
-import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor, changeNightMode } from '../actions';
+import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor } from '../actions';
 var WEBVIEW_REF = 'webview';
 
 class NewsItem extends Component {
@@ -41,14 +41,12 @@ class NewsItem extends Component {
   };
   componentWillMount() {
     if(this.props.row){
-      this.fetchContent(this.props.row)
+      this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
     }
   }
   componentWillReceiveProps(props) {
     if((props.row != this.props.row)&&(props.row)) {
-      this.setState({ loading: true},()=>{this.fetchContent(this.props.row)})
-    } else if (props.textColor) {
-      this.updateWebview(props.row)
+      this.setState({ thisUrl: props.row.url, loading: true},()=>{this.fetchContent(this.props.row)})
     }
   }
   componentDidMount() {
@@ -138,9 +136,19 @@ class NewsItem extends Component {
       .then((response) => response.text())
       .then((responseData) => {
         $ = cheerio.load(responseData)
-        this.setState({ bodyHTML: $('#left_calculator').html() }, () => {
-          this.updateWebview(row)
+        this.setState({ bodyHTML: $('body').html() }, () => {
+          this.setState({ headHTML: $('head').html() },()=>{
+            this.updateWebview(row)
+          })
         })
+        // $('#box_tinkhac_detail> div>ul> li').each(function () {
+        //   other.push({
+        //     url: $(this).find('h2').find('a').attr('href'),
+        //     title: $(this).find('h2').find('a').text(),
+        //     thumb: $(this).find('div').find('a').find('img').attr('src')
+        //
+        //   })
+        // })
       })
   }
   // injectedJavaScript='
@@ -179,33 +187,36 @@ class NewsItem extends Component {
   // };
   // '
   updateWebview(row) {
-    // var link = row.url;
-    // var location1 = link.lastIndexOf("/");
-    // var location2 = link.lastIndexOf("-");
-    // var CoverImg = link.substr(location1+1 , location2-location1-1);
-    // this.setState({ coverImg: CoverImg},()=>{
+    var link = row.url;
+    var location1 = link.lastIndexOf("/");
+    var location2 = link.lastIndexOf("-");
+    var CoverImg = link.substr(location1+1 , location2-location1-1);
+    this.setState({ coverImg: CoverImg},()=>{
       this.setState({
         html:
             `<html>
-              <body>
-              <div style="position: relative">
-                <div style="position:absolute; background-color: black; width: 100%; height: 100%; opacity: 0.3">
-                </div>
-                <img class="cover" src=${row.thumb}/>
-                <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 4px">
-                  <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 4px">${row.cate}</p>
-                </div>
-                <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
-                  <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
-                </div>
+            <head>${this.state.headHTML}</head>
+            <script>
+              $('img[alt=${CoverImg}]').remove();
+            </script>
+            <body>
+            <div style="position: relative">
+              <div style="position:absolute; background-color: black; width: 100%; height: 100%; opacity: 0.3">
               </div>
-              <h1 class="title">${row.title}</h1>
-              ${this.state.bodyHTML + this.returnHtml()}
+              <img class="cover" src=${row.thumb}/>
+              <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 4px">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 4px">${row.cate}</p>
+              </div>
+              <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
+              </div>
+            </div>
+            ${this.state.bodyHTML + this.returnHtml()}
 
-              </body>
+            </body>
             </html>
           `})
-    // })
+    })
   }
   returnHtml = () => {
     let htmlPlus = `
@@ -233,14 +244,10 @@ class NewsItem extends Component {
         font-size: ${this.props.fontSize + 3};
         color: ${this.props.textColor};
       }
-      h3, h2, p, h1 {
+      h3, h2, p, .block_timer_share{
         margin-left: 20px;
         line-height: 1.3em;
         margin-right: 10px;
-        font-size: ${this.props.fontSize};
-        color: ${this.props.textColor};
-      }
-      span, em {
         font-size: ${this.props.fontSize};
         color: ${this.props.textColor};
       }
@@ -289,11 +296,10 @@ class NewsItem extends Component {
         var messageHeight = {key:"heightContent",value:$(document).height()};
         // alert($(document).height().toString())
         window.postMessageNative(JSON.stringify(messageHeight));
-      },200)
+      },500)
     });
-    $('span').removeAttr('style');
-    $('em').removeAttr('style');
-   $("iframe,.block_filter_live,.desc_cation,.Image,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.title_news,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection,#WIDGET").remove();
+   $('img[alt=${this.state.coverImg}]').remove();
+   $(".block_filter_live,.desc_cation,.Image,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection,#WIDGET").remove();
 
     var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
@@ -335,13 +341,16 @@ class NewsItem extends Component {
       case 'textSelected':
         this.setState({ textSelected: message.value})
         break;
+      case 'loadingState':
+        this.setState({ loading: true })
+        break;
     }
   }
   loading() {
     if (this.state.loading) {
       return (
-        <View style={{justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 4, backgroundColor: this.props.postBackground, width: width, height: height}}>
-          <Text style={{color: this.props.textColor}}>Loading...
+        <View style={{justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 4, backgroundColor: 'white', width: width, height: height}}>
+          <Text>Loading...
           </Text>
         </View>
       )
@@ -368,11 +377,11 @@ class NewsItem extends Component {
     if(this.props.postBackground == 'white') {
       this.props.dispatch(changeTextColor('white'));
       this.props.dispatch(changeBackgroundColor('black'));
-      this.props.dispatch(changeNightMode(true));
+      this.setState({ switcher: true });
     } else {
       this.props.dispatch(changeTextColor('black'));
       this.props.dispatch(changeBackgroundColor('white'));
-      this.props.dispatch(changeNightMode(false));
+      this.setState({ switcher: false });
     }
     setTimeout(() => {
       this.updateWebview(this.props.row)
@@ -398,15 +407,11 @@ class NewsItem extends Component {
                 <TouchableHighlight
                   underlayColor="white"
                   onPress={() => {
-                    if (this.props.fontSize < 30) {
-                      this.props.dispatch(changeFontSize(this.props.fontSize + 2));
-                      setTimeout(() => {
-                        this.updateWebview(this.props.row)
-                        this.props.dispatch(changeModalState(!this.props.openMenu))
-                      }, 100)
-                    } else {
-                      Toast.show('Cỡ chữ đã tăng tối đa');
-                    }
+                    this.props.dispatch(changeFontSize(this.props.fontSize + 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
                     if (Platform.OS === 'android') {
                       setTimeout(() => this.reloadWebview(), 200)
                     }
@@ -419,15 +424,11 @@ class NewsItem extends Component {
                 <TouchableHighlight
                   underlayColor="white"
                   onPress={() => {
-                    if (this.props.fontSize > 7) {
-                      this.props.dispatch(changeFontSize(this.props.fontSize - 2));
-                      setTimeout(() => {
-                        this.updateWebview(this.props.row)
-                        this.props.dispatch(changeModalState(!this.props.openMenu))
-                      }, 100)
-                    } else {
-                      Toast.show('Cỡ chữ đã thu nhỏ tối đa');
-                    }
+                    this.props.dispatch(changeFontSize(this.props.fontSize - 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
                     if (Platform.OS === 'android') {
                       setTimeout(() => this.reloadWebview(), 200)
                     }
@@ -446,8 +447,9 @@ class NewsItem extends Component {
                   <Text style={styles.modalText}>Chế độ đọc ban đêm
                         </Text>
                   <Switch
-                  value={this.props.nightMode}
+                  value={this.state.switcher}
                   onValueChange={()=>{
+                    this.setState({switcher: !this.state.switcher});
                     this.switcherPressed()
                   }}/>
                 </View>
@@ -591,8 +593,7 @@ const mapStateToProps = state => {
     fontSize: state.readerModalReducer.fontSize,
     postBackground: state.readerModalReducer.postBackground,
     textColor: state.readerModalReducer.textColor,
-    disableScroll: state.readerModalReducer.disableScroll,
-    nightMode: state.readerModalReducer.nightMode
+    disableScroll: state.readerModalReducer.disableScroll
   }
 }
 export default connect(mapStateToProps)(NewsItem);

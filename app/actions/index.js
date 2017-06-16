@@ -13,7 +13,8 @@ import {
   REPLACE_LIST_CATE,
   RELOAD,
   DISABLE_SCROLL,
-  CHANGE_CURRENT_PAGE
+  CHANGE_CURRENT_PAGE,
+  CHANGE_NIGHT_MODE
 } from './types';
 
 
@@ -98,6 +99,12 @@ export const disableScrollWebview = (data) => {
 export const changeCurrentPage = (data) => {
   return {
     type: CHANGE_CURRENT_PAGE,
+    payload: data
+  }
+}
+export const changeNightMode = (data) => {
+  return {
+    type: CHANGE_NIGHT_MODE,
     payload: data
   }
 }

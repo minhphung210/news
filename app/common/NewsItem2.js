@@ -12,7 +12,7 @@ class NewsItem2 extends Component {
         <TouchableOpacity
         onPress={this.props.onPress}
         activeOpacity={1}
-        style={[{ flex:1, height: height-50 },this.props.style]}>
+        style={[{ flex:1, height: height-50, backgroundColor: this.props.postBackground },this.props.style]}>
             <Image
             source={{uri: this.props.data.thumb}}
             resizeMode="cover"
@@ -21,12 +21,12 @@ class NewsItem2 extends Component {
               <Text style={styles.categoryText}>{this.props.data.cate}
               </Text>
             </View>
-            <Text style={styles.title}>{this.props.data.title}
+            <Text style={[styles.title,{color: this.props.textColor}]}>{this.props.data.title}
             </Text>
-            <Text style={styles.date}>Vnexpress.net - {date.toLocaleString()}
+            <Text style={[styles.date,{color: this.props.textColor}]}>Vnexpress.net - {date.toLocaleString()}
             </Text>
             <View style={{flex:1, justifyContent: 'center', alignItems: 'center'}}>
-              <Text style={styles.description}>{this.props.data.des}
+              <Text style={[styles.description,{color: this.props.textColor}]}>{this.props.data.des}
               </Text>
             </View>
         </TouchableOpacity>
@@ -75,6 +75,8 @@ const styles={
 const mapStateToProps = state => {
    return {
      openMenu: state.readerModalReducer.modalState,
+     postBackground: state.readerModalReducer.postBackground,
+     textColor: state.readerModalReducer.textColor,
    }
 }
 export default connect(mapStateToProps)(NewsItem2);

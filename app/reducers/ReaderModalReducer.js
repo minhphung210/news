@@ -1,5 +1,5 @@
 import * as types from '../actions/types';
-const INITIAL_STATE = {modalState: false, fontSize: 14, postBackground: 'white', textColor: 'black'};
+const INITIAL_STATE = {modalState: false, fontSize: 14, postBackground: 'white', textColor: 'black', nightMode: false};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -43,6 +43,12 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         pageInfo: action.payload
+      }
+      break;
+    case types.CHANGE_NIGHT_MODE:
+      return {
+        ...state,
+        nightMode: action.payload
       }
       break;
     default:

@@ -56,8 +56,8 @@ class NewsDetail extends Component {
       },
       onPanResponderMove: (event, gestureState) => {
         this.setState({ toTop: foo - gestureState.dy },()=>{
-          if(250> this.state.toTop > 0) {
-            this.setState({ navBarBackground: "rgba(0, 0, 0, 0." + Math.floor(this.state.toTop/250*10)+ ")"})
+          if(150> this.state.toTop > 0) {
+            this.setState({ navBarBackground: "rgba(0, 0, 0, 0." + Math.floor(this.state.toTop/150*10)+ ")"})
           }
         });
 
@@ -121,7 +121,7 @@ class NewsDetail extends Component {
           switch (this.state.index0) {
             case 2:
                 if(this.state.dx > 0) {
-                  if (this.state.dx > width/3) {
+                  if ((this.state.dx > width/3)||(gestureState.vx > 1.2)) {
                     if (this.props.dataSlot0 >0) {
                       this.setState({index2: 2,index1: 3,index0: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1-3))},310)
@@ -147,7 +147,7 @@ class NewsDetail extends Component {
                     ).start();
                   }
                 } else {
-                  if (this.state.dx < -width/3) {
+                  if ((this.state.dx < -width/3)||(gestureState.vy < -1.2)) {
                     if (this.props.dataSlot0 +1 < listLength) {
                       this.setState({index2: 1,index1: 2,index0: 3, toTop: 0,navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 + 3))},310)
@@ -176,7 +176,7 @@ class NewsDetail extends Component {
                 break;
             case 3:
                 if(this.state.dx > 0) {
-                  if (this.state.dx > width/3) {
+                  if ((this.state.dx > width/3)||(gestureState.vy > 1.2)) {
                     this.setState({index0: 2,index2: 3,index1: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                       if(this.props.dataSlot2>2) {
                         setTimeout(()=>{this.props.dispatch(selectedPost2(this.props.dataSlot2 - 3))},310)
@@ -203,7 +203,7 @@ class NewsDetail extends Component {
                     ).start();
                   }
                 } else {
-                  if (this.state.dx < -width/3) {
+                  if ((this.state.dx < -width/3)||(gestureState.vy < -1.2)) {
                     if (this.props.dataSlot0 +2 < listLength) {
                       this.setState({index0: 1,index2: 2,index1: 3, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 + 3))},310)
@@ -233,7 +233,7 @@ class NewsDetail extends Component {
                 break;
             case 1:
                 if(this.state.dx > 0) {
-                  if (this.state.dx > width/3) {
+                  if ((this.state.dx > width/3)||(gestureState.vy > 1.2)) {
                     this.setState({index1: 2,index0: 3,index2: 1, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                       if(this.props.dataSlot0>2) {
                         setTimeout(()=>{this.props.dispatch(selectedPost0(this.props.dataSlot0 - 3))},310)
@@ -260,7 +260,7 @@ class NewsDetail extends Component {
                     ).start();
                   }
                 } else {
-                  if (this.state.dx < -width/3) {
+                  if ((this.state.dx < -width/3)||(gestureState.vy < -1.2)) {
                     if (this.props.dataSlot0 < listLength) {
                       this.setState({index1: 1,index0: 2,index2: 3, toTop: 0, navBarBackground: "rgba(0, 0, 0, 0)"},() => {
                         setTimeout(()=>{this.props.dispatch(selectedPost1(this.props.dataSlot1 + 3))},310)
