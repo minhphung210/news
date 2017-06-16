@@ -10,9 +10,7 @@ import {
   ScrollView,
   AsyncStorage,
   Alert,
-  Switch,
-  Animated,
-  Easing
+  Switch
 } from 'react-native';
 var { height, width } = Dimensions.get('window');
 import _ from 'lodash';
@@ -24,14 +22,10 @@ var Toast = require('react-native-toast');
 // import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 import { connect } from 'react-redux';
-import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor, changeNightMode } from '../actions';
+import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColor } from '../actions';
 var WEBVIEW_REF = 'webview';
 
 class NewsItem extends Component {
-  constructor(props) {
-    super(props)
-    this.spinValue = new Animated.Value(0)
-  }
   state = {
     html: '',
     openMenu: false,
@@ -42,19 +36,17 @@ class NewsItem extends Component {
     textSelected: '',
     loading: true,
     videoUrl: null,
-    list: [],
+    list :[],
     switcher: false
   };
   componentWillMount() {
-    if (this.props.row) {
-      this.fetchContent(this.props.row)
+    if(this.props.row){
+      this.setState({thisUrl: this.props.row.url},()=>{this.fetchContent(this.props.row)})
     }
   }
   componentWillReceiveProps(props) {
-    if ((props.row != this.props.row) && (props.row)) {
-      this.setState({ loading: true }, () => { this.fetchContent(this.props.row) })
-    } else if (props.textColor) {
-      this.updateWebview(props.row)
+    if((props.row != this.props.row)&&(props.row)) {
+      this.setState({ thisUrl: props.row.url, loading: true},()=>{this.fetchContent(this.props.row)})
     }
   }
   componentDidMount() {
@@ -68,18 +60,6 @@ class NewsItem extends Component {
         console.log(list)
       }
     })
-    this.spinLoading()
-  }
-  spinLoading() {
-    this.spinValue.setValue(0)
-    Animated.timing(
-      this.spinValue,
-      {
-        toValue: 1,
-        duration: 2500,
-        easing: Easing.ease,
-      }
-    ).start(() => this.spinLoading())
   }
   // createPDF() {
   //     let date = new Date()
@@ -149,23 +129,26 @@ class NewsItem extends Component {
   }
   fetchContent(row) {
     this.setState({ loading: true });
-    setTimeout(() => this.setState({ loading: false }), 5000);
+    setTimeout(()=>this.setState({ loading: false }),5000);
     let url = row.url
     let other = []
-    fetch(url)
+    fetch(row.url)
       .then((response) => response.text())
       .then((responseData) => {
         $ = cheerio.load(responseData)
-        if (url.includes("http://tinmoi24.vn/") == false) {
-          this.setState({ bodyHTML: $('.main_content_detail.width_common').html() }, () => {
+        this.setState({ bodyHTML: $('body').html() }, () => {
+          this.setState({ headHTML: $('head').html() },()=>{
             this.updateWebview(row)
           })
-        }
-        else {
-          this.setState({ bodyHTML: $('.newbody').html() }, () => {
-            this.updateWebview(row)
-          })
-        }
+        })
+        // $('#box_tinkhac_detail> div>ul> li').each(function () {
+        //   other.push({
+        //     url: $(this).find('h2').find('a').attr('href'),
+        //     title: $(this).find('h2').find('a').text(),
+        //     thumb: $(this).find('div').find('a').find('img').attr('src')
+        //
+        //   })
+        // })
       })
   }
   // injectedJavaScript='
@@ -204,44 +187,44 @@ class NewsItem extends Component {
   // };
   // '
   updateWebview(row) {
-    // var link = row.url;
-    // var location1 = link.lastIndexOf("/");
-    // var location2 = link.lastIndexOf("-");
-    // var CoverImg = link.substr(location1+1 , location2-location1-1);
-    // this.setState({ coverImg: CoverImg},()=>{
-    var source = "";
-    if (row.url.includes("vnexpress")) {
-      source = "Vnexpress.net";
-    } else {
-      source = "Tinmoi24.vn"
-    }
-    console.log(row.thumb)
-    this.setState({
-      html:
-      `<html>
-              <body>
-              <div style="position: relative">
-                <div style="position:absolute; background-color: black; width: 100%; height: 100%; opacity: 0.3">
-                </div>
-                <img class="cover" src='${row.thumb}' style="max-width: ${width}px;max-height: 400px"/>
-                <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 4px">
-                  <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 4px">${row.cate}</p>
-                </div>
-                <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
-                  <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">${source}</p>
-                </div>
+    var link = row.url;
+    var location1 = link.lastIndexOf("/");
+    var location2 = link.lastIndexOf("-");
+    var CoverImg = link.substr(location1+1 , location2-location1-1);
+    this.setState({ coverImg: CoverImg},()=>{
+      this.setState({
+        html:
+            `<html>
+            <head>${this.state.headHTML}</head>
+            <script>
+              $('img[alt=${CoverImg}]').remove();
+            </script>
+            <body>
+            <div style="position: relative">
+              <div style="position:absolute; background-color: black; width: 100%; height: 100%; opacity: 0.3">
               </div>
-              <h1 class="title">${row.title}</h1>
-              ${this.state.bodyHTML + this.returnHtml()}
+              <img class="cover" src=${row.thumb}/>
+              <div style="position:absolute; background-color: ${row.cateColor}; bottom: 30; left: 20; border-radius: 4px">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 5; border-radius: 4px">${row.cate}</p>
+              </div>
+              <div style="position:absolute; bottom: 10; left: 20; border-radius: 5">
+                <p style="color:white; text-align:center; margin-left:10; padding-left:0; line-height:1em; font-size:14; margin: 0; border-radius: 10">Vnexpress.net</p>
+              </div>
+            </div>
+            ${this.state.bodyHTML + this.returnHtml()}
 
-              </body>
+            </body>
             </html>
           `})
-    // })
+    })
   }
   returnHtml = () => {
     let htmlPlus = `
     <style>
+      .cover{
+        width: ${width}px;
+        max-height: 400px
+      }
       .title{
         padding-left: 20px
       }
@@ -250,7 +233,7 @@ class NewsItem extends Component {
         color: black
       }
       img{
-        max-width:${width-5}px;
+        max-width:${width}px;
       }
       * {
         -webkit-touch-callout: none !important;
@@ -261,14 +244,10 @@ class NewsItem extends Component {
         font-size: ${this.props.fontSize + 3};
         color: ${this.props.textColor};
       }
-      h3, h2, p, h1 {
+      h3, h2, p, .block_timer_share{
         margin-left: 20px;
         line-height: 1.3em;
         margin-right: 10px;
-        font-size: ${this.props.fontSize};
-        color: ${this.props.textColor};
-      }
-      span, em {
         font-size: ${this.props.fontSize};
         color: ${this.props.textColor};
       }
@@ -297,7 +276,7 @@ class NewsItem extends Component {
       }
       iframe {
         max-width:${width}px;
-        max-height:${width / 16 * 9}px;
+        max-height:${width/16*9}px;
       }
       html, body{
         width: ${width}px;
@@ -317,22 +296,15 @@ class NewsItem extends Component {
         var messageHeight = {key:"heightContent",value:$(document).height()};
         // alert($(document).height().toString())
         window.postMessageNative(JSON.stringify(messageHeight));
-      },200)
+      },500)
     });
-    $('span').removeAttr('style');
-    $('em').removeAttr('style');
-    $("[data-component-type=video]").replaceWith("<h1>Bài viết chứa video, vui lòng mở link bằng trình duyệt để xem video</h1>");
-   $("iframe,.block_filter_live,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.title_news,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection,#WIDGET").remove();
+   $('img[alt=${this.state.coverImg}]').remove();
+   $(".block_filter_live,.desc_cation,.Image,.detail_top_live.width_common,.block_breakumb_left,#menu-box,.bi-related,head,#result_other_news,#social_like,noscript,#myvne_taskbar,.block_more_info,#wrapper_header,#header_web,#wrapper_footer,.breakumb_timer.width_common,.banner_980x60,.right,#box_comment,.nativeade,#box_tinkhac_detail,#box_tinlienquan,.block_tag.width_common.space_bottom_20,#ads_endpage,.block_timer_share,.div-fbook.width_common.title_div_fbook,.xemthem_new_ver.width_common,.relative_new,#topbar,#topbar-scroll,.text_xemthem,#box_col_left,.form-control.change_gmt,.tt_2,.back_tt,.box_tinkhac.width_common,#sticky_info_st,.col_fillter.box_sticky_left,.start.have_cap2,.cap2,.list_news_dot_3x3,.minutes,.div-fbook.width_common.title_div_fbook,#live-updates-wrapper,.block_share.right,.block_goithutoasoan,.xemthem_new_ver.width_common,meta,link,.menu_main,.top_3,.number_bgs,.filter_right,#headmass,.box_category.width_common,.banner_468.width_common,.adsbyeclick,.block_col_160.right,#ArticleBanner2,#ad_wrapper_protection,#WIDGET").remove();
 
     var link = document.querySelectorAll("a");
       for(var i = 0; i < link.length; i++){
         link[i].setAttribute("href", "javascript:void(0)");
     };
-    $("header,.relative,.footer").remove();
-    var text = $("p").last().text();
-    if(text.includes(">>> Đọc thêm:")==true){
-      $("p").last().remove();
-    }
     function getSelectionText() {
         var text = "";
         var activeEl = document.activeElement;
@@ -364,30 +336,21 @@ class NewsItem extends Component {
     let message = JSON.parse(event.nativeEvent.data);
     switch (message.key) {
       case 'heightContent':
-        this.setState({ heightContent: message.value }, () => this.setState({ loading: false }))
+        this.setState({ heightContent: message.value},()=>this.setState({ loading: false }))
         break;
       case 'textSelected':
-        this.setState({ textSelected: message.value })
+        this.setState({ textSelected: message.value})
+        break;
+      case 'loadingState':
+        this.setState({ loading: true })
         break;
     }
   }
   loading() {
     if (this.state.loading) {
-      const spin = this.spinValue.interpolate({
-        inputRange: [0, 0.5, 1],
-        outputRange: ['0deg', '360deg', '720deg']
-      })
       return (
-        <View style={{ justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 4, backgroundColor: this.props.postBackground, width: width, height: height }}>
-          <Animated.Image
-            source={require('../../img/load-icon.png')}
-            style={{
-              height: 40,
-              width: 40,
-              transform: [{ rotate: spin }]
-            }}
-          />
-          <Text style={{ color: this.props.textColor }}>Loading...
+        <View style={{justifyContent: 'center', alignItems: 'center', position: 'absolute', zIndex: 4, backgroundColor: 'white', width: width, height: height}}>
+          <Text>Loading...
           </Text>
         </View>
       )
@@ -411,14 +374,14 @@ class NewsItem extends Component {
   // }}
   // source={{ url: this.state.thisUrl }} />
   switcherPressed() {
-    if (this.props.postBackground == 'white') {
+    if(this.props.postBackground == 'white') {
       this.props.dispatch(changeTextColor('white'));
       this.props.dispatch(changeBackgroundColor('black'));
-      this.props.dispatch(changeNightMode(true));
+      this.setState({ switcher: true });
     } else {
       this.props.dispatch(changeTextColor('black'));
       this.props.dispatch(changeBackgroundColor('white'));
-      this.props.dispatch(changeNightMode(false));
+      this.setState({ switcher: false });
     }
     setTimeout(() => {
       this.updateWebview(this.props.row)
@@ -438,49 +401,41 @@ class NewsItem extends Component {
           source={{ html: this.state.html }} />
         {this.loading()}
         {this.props.openMenu &&
-          <TouchableOpacity style={styles.modalContainer} onPress={() => this.props.dispatch(changeModalState(!this.props.openMenu))}>
-            <Animatable.View animation="slideInDown" duration={300} style={[styles.menuModal,{backgroundColor: this.props.postBackground}]}>
-              <View style={{ flexDirection: 'row', flex: 1 }}>
+          <TouchableOpacity style={styles.modalContainer} onPress={()=>this.props.dispatch(changeModalState(!this.props.openMenu))}>
+            <Animatable.View animation="slideInDown" duration={300} style={styles.menuModal}>
+              <View style={{flexDirection: 'row', flex:1}}>
                 <TouchableHighlight
                   underlayColor="white"
                   onPress={() => {
-                    if (this.props.fontSize < 30) {
-                      this.props.dispatch(changeFontSize(this.props.fontSize + 2));
-                      setTimeout(() => {
-                        this.updateWebview(this.props.row)
-                        this.props.dispatch(changeModalState(!this.props.openMenu))
-                      }, 100)
-                    } else {
-                      Toast.show('Cỡ chữ đã tăng tối đa');
-                    }
+                    this.props.dispatch(changeFontSize(this.props.fontSize + 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
                     if (Platform.OS === 'android') {
                       setTimeout(() => this.reloadWebview(), 200)
                     }
                   }}
-                  style={[styles.modalItem, { borderRightWidth: 1, borderTopLeftRadius: 10 }]}>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: this.props.textColor }}>A</Text>
+                  style={[styles.modalItem,{borderRightWidth: 1, borderTopLeftRadius:10}]}>
+                  <View style={{alignItems: 'center'}}>
+                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>A</Text>
                   </View>
                 </TouchableHighlight>
                 <TouchableHighlight
                   underlayColor="white"
                   onPress={() => {
-                    if (this.props.fontSize > 7) {
-                      this.props.dispatch(changeFontSize(this.props.fontSize - 2));
-                      setTimeout(() => {
-                        this.updateWebview(this.props.row)
-                        this.props.dispatch(changeModalState(!this.props.openMenu))
-                      }, 100)
-                    } else {
-                      Toast.show('Cỡ chữ đã thu nhỏ tối đa');
-                    }
+                    this.props.dispatch(changeFontSize(this.props.fontSize - 2));
+                    setTimeout(() => {
+                      this.updateWebview(this.props.row)
+                      this.props.dispatch(changeModalState(!this.props.openMenu))
+                    }, 100)
                     if (Platform.OS === 'android') {
                       setTimeout(() => this.reloadWebview(), 200)
                     }
                   }}
-                  style={[styles.modalItem, { borderTopRightRadius: 10 }]}>
-                  <View style={{ alignItems: 'center' }}>
-                    <Text style={{ color: this.props.textColor }}>A</Text>
+                  style={[styles.modalItem,{borderTopRightRadius:10}]}>
+                  <View style={{alignItems: 'center'}}>
+                    <Text>A</Text>
                   </View>
                 </TouchableHighlight>
               </View>
@@ -488,14 +443,15 @@ class NewsItem extends Component {
                 underlayColor="white"
                 onPress={() => this.switcherPressed()}
                 style={styles.modalItem}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 20 }}>
-                  <Text style={[styles.modalText,{ color: this.props.textColor }]}>Chế độ đọc ban đêm
+                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 20}}>
+                  <Text style={styles.modalText}>Chế độ đọc ban đêm
                         </Text>
                   <Switch
-                    value={this.props.nightMode}
-                    onValueChange={() => {
-                      this.switcherPressed()
-                    }} />
+                  value={this.state.switcher}
+                  onValueChange={()=>{
+                    this.setState({switcher: !this.state.switcher});
+                    this.switcherPressed()
+                  }}/>
                 </View>
               </TouchableHighlight>
 
@@ -504,7 +460,7 @@ class NewsItem extends Component {
                 onPress={() => this._openLink()}
                 style={styles.modalItem}>
                 <View>
-                  <Text style={[styles.modalText,{ color: this.props.textColor }]}>Mở trong trình duyệt
+                  <Text style={styles.modalText}>Mở trong trình duyệt
                         </Text>
                 </View>
               </TouchableHighlight>
@@ -516,10 +472,10 @@ class NewsItem extends Component {
                   Toast.show('Đã sao chép link');
                   this.props.dispatch(changeModalState(!this.props.openMenu))
                 }}
-                style={[styles.modalItem, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10, borderBottomWidth: 0 }]}
-              >
+                style={[styles.modalItem,{borderBottomLeftRadius:10, borderBottomRightRadius:10, borderBottomWidth: 0}]}
+                >
                 <View>
-                  <Text style={[styles.modalText,{  color: this.props.textColor }]}>Sao chép link
+                  <Text style={styles.modalText}>Sao chép link
                         </Text>
                 </View>
               </TouchableHighlight>
@@ -548,7 +504,7 @@ class NewsItem extends Component {
               }}
               style={styles.modalItem}>
               <View>
-                <Text style={[styles.modalText,{ color: this.props.textColor }]}>Share link kèm trích dẫn
+                <Text style={styles.modalText}>Share link kèm trích dẫn
                       </Text>
               </View>
             </TouchableHighlight>
@@ -604,10 +560,11 @@ const styles = {
     width: '100%'
   },
   modalItem: {
+    backgroundColor: 'white',
     borderColor: 'rgb(217, 217, 217)',
     borderBottomWidth: 1,
     justifyContent: 'center',
-    flex: 1
+    flex:1
   },
   modalText: {
     paddingLeft: 20
@@ -616,12 +573,10 @@ const styles = {
     elevation: 5,
     top: 60,
     right: 20,
-    marginLeft: width / 3,
+    marginLeft: width/3,
     shadowOpacity: 0.3,
     borderRadius: 30,
-    height: 200,
-    borderColor: 'white',
-    borderWidth: 1
+    height: 200
   },
   modalContainer: {
     width: '100%',
@@ -638,8 +593,7 @@ const mapStateToProps = state => {
     fontSize: state.readerModalReducer.fontSize,
     postBackground: state.readerModalReducer.postBackground,
     textColor: state.readerModalReducer.textColor,
-    disableScroll: state.readerModalReducer.disableScroll,
-    nightMode: state.readerModalReducer.nightMode
+    disableScroll: state.readerModalReducer.disableScroll
   }
 }
 export default connect(mapStateToProps)(NewsItem);
