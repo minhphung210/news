@@ -113,7 +113,6 @@ class Home extends Component {
     }
   }
   componentWillReceiveProps(props) {
-    console.log(props)
     if (props.reload) {
       this._get('listCate')
       this.props.dispatch(reload(false))
@@ -122,8 +121,11 @@ class Home extends Component {
   componentWillMount() {
     this._panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (event, gestureState) => true,
-      onMoveShouldSetPanResponder: (event, gestureState) => true,
-      onPanResponderGrant: (event, gestureState) => { },
+      // onMoveShouldSetPanResponder: (event, gestureState) => true,
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+           return gestureState.dx != 0 && gestureState.dy != 0;
+      },
+      onPanResponderGrant: (event, gestureState) => true,
       onPanResponderMove: (event, gestureState) => {
         switch (this.state.index0) {
           case 2:
@@ -159,7 +161,6 @@ class Home extends Component {
         this.setState({ dy: gestureState.dy })
       },
       onPanResponderRelease: (event, gestureState) => {
-        console.log(this.state.bigData)
         switch (this.state.index0) {
           case 2:
             if (this.state.dy > 0) {
@@ -371,7 +372,6 @@ class Home extends Component {
               })
             }
           })
-          console.log(data)
           this.setState({
             ['data' + i]: data,
             refreshing: false,
@@ -381,12 +381,13 @@ class Home extends Component {
 
   }
   toDetail(postId) {
+    console.log("POST ID: " + postId);
     this.props.dispatch(selectedPost0(postId))
     if (postId + 1 < this.state.bigData.length) {
       this.props.dispatch(selectedPost1(postId + 1))
     }
     this.props.dispatch(selectedPost2(postId - 1))
-    setTimeout(() => { this.props.navigation.navigate('Detail_Screen') }, 300)
+    setTimeout(() => { this.props.navigation.navigate('Detail_Screen') }, 100)
   }
   renderLoading() {
     if (this.props.listCate.length == 0) {

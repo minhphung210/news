@@ -261,7 +261,7 @@ class NewsItem extends Component {
         font-size: ${this.props.fontSize + 3};
         color: ${this.props.textColor};
       }
-      h3, h2, p, h1 {
+      h3, h2, p, h1, td {
         margin-left: 20px;
         line-height: 1.3em;
         margin-right: 10px;
@@ -546,7 +546,7 @@ class NewsItem extends Component {
                   .then(this._showResult)
                   .catch((error) => this.setState({ result: 'error: ' + error.message }));
               }}
-              style={styles.modalItem}>
+              style={[styles.modalItem,{backgroundColor: this.props.backgroundColor}]}>
               <View>
                 <Text style={[styles.modalText,{ color: this.props.textColor }]}>Share link kèm trích dẫn
                       </Text>
