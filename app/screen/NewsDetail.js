@@ -44,9 +44,15 @@ class NewsDetail extends Component {
     let listLength = this.props.listData.length;
     var foo;
     this._panResponder = PanResponder.create({
-      onMoveShouldSetResponderCapture: (event, gestureState) => {console.log(gestureState)},
-      onStartShouldSetPanResponder: () => true,
-      onMoveShouldSetPanResponderCapture: (event, gestureState) => console.log(gestureState),
+      onMoveShouldSetResponderCapture: (event, gestureState) => {
+        console.log(event.nativeEvent.locationX)
+        return (event.nativeEvent.locationX < 35 || event.nativeEvent.locationX > width-35)
+      },
+      onStartShouldSetPanResponder: (event, gestureState) => {
+        console.log(event.nativeEvent.locationX)
+        return (event.nativeEvent.locationX < 35 || event.nativeEvent.locationX > width-35)
+      },
+      // onMoveShouldSetPanResponderCapture: (event, gestureState) => console.log(gestureState),
       onPanResponderGrant: (event, gestureState) => {
         if (this.state.toTop >0) {
           foo = this.state.toTop;
@@ -362,7 +368,7 @@ class NewsDetail extends Component {
 
           <Animated.View
           ref={ (view) => topView = view }
-          style={{position: 'absolute', left: this.state.left0, zIndex: this.state.index0, backgroundColor: 'white'}}
+          style={{position: 'absolute', left: this.state.left0, zIndex: this.state.index0, backgroundColor: 'white', flex:1}}
           {...this._panResponder.panHandlers}>
               <NewsItem
               row={this.props.listData[this.props.dataSlot0]}/>
@@ -370,7 +376,7 @@ class NewsDetail extends Component {
 
           <Animated.View
           ref={ (view) => topView = view }
-          style={{position: 'absolute', left: this.state.left1, zIndex: this.state.index1, backgroundColor: 'white'}}
+          style={{position: 'absolute', left: this.state.left1, zIndex: this.state.index1, backgroundColor: 'white', flex:1}}
           {...this._panResponder.panHandlers}>
               <NewsItem
               row={this.props.listData[this.props.dataSlot1]}/>
