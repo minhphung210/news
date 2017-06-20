@@ -29,6 +29,7 @@ import { changeFontSize, changeModalState, changeBackgroundColor, changeTextColo
 var WEBVIEW_REF = 'webview';
 
 import HTMLView from 'react-native-htmlview';
+import Video from 'react-native-video';
 
 class NewsItem extends Component {
   constructor(props) {
@@ -432,9 +433,101 @@ class NewsItem extends Component {
       setTimeout(() => this.reloadWebview(), 200)
     }
   }
+
   render() {
     return (
         <ScrollView style={{ height: height }}>
+        {this.props.openMenu &&
+          <TouchableOpacity style={styles.modalContainer} onPress={() => this.props.dispatch(changeModalState(!this.props.openMenu))}>
+            <Animatable.View animation="slideInDown" duration={300} style={[styles.menuModal,{backgroundColor: this.props.postBackground}]}>
+              <View style={{ flexDirection: 'row', flex: 1 }}>
+                <TouchableHighlight
+                  underlayColor="white"
+                  onPress={() => {
+                    if (this.props.fontSize < 30) {
+                      this.props.dispatch(changeFontSize(this.props.fontSize + 2));
+                      setTimeout(() => {
+                        this.updateWebview(this.props.row)
+                        this.props.dispatch(changeModalState(!this.props.openMenu))
+                      }, 100)
+                    } else {
+                      Toast.show('Cỡ chữ đã tăng tối đa');
+                    }
+                    if (Platform.OS === 'android') {
+                      setTimeout(() => this.reloadWebview(), 200)
+                    }
+                  }}
+                  style={[styles.modalItem, { borderRightWidth: 1, borderTopLeftRadius: 10 }]}>
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: this.props.textColor }}>A</Text>
+                  </View>
+                </TouchableHighlight>
+                <TouchableHighlight
+                  underlayColor="white"
+                  onPress={() => {
+                    if (this.props.fontSize > 7) {
+                      this.props.dispatch(changeFontSize(this.props.fontSize - 2));
+                      setTimeout(() => {
+                        this.updateWebview(this.props.row)
+                        this.props.dispatch(changeModalState(!this.props.openMenu))
+                      }, 100)
+                    } else {
+                      Toast.show('Cỡ chữ đã thu nhỏ tối đa');
+                    }
+                    if (Platform.OS === 'android') {
+                      setTimeout(() => this.reloadWebview(), 200)
+                    }
+                  }}
+                  style={[styles.modalItem, { borderTopRightRadius: 10 }]}>
+                  <View style={{ alignItems: 'center' }}>
+                    <Text style={{ color: this.props.textColor }}>A</Text>
+                  </View>
+                </TouchableHighlight>
+              </View>
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => this.switcherPressed()}
+                style={styles.modalItem}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 20 }}>
+                  <Text style={[styles.modalText,{ color: this.props.textColor }]}>Chế độ đọc ban đêm
+                        </Text>
+                  <Switch
+                    value={this.props.nightMode}
+                    onValueChange={() => {
+                      this.switcherPressed()
+                    }} />
+                </View>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => this._openLink()}
+                style={styles.modalItem}>
+                <View>
+                  <Text style={[styles.modalText,{ color: this.props.textColor }]}>Mở trong trình duyệt
+                        </Text>
+                </View>
+              </TouchableHighlight>
+
+              <TouchableHighlight
+                underlayColor="white"
+                onPress={() => {
+                  Clipboard.setString(this.props.row.url);
+                  Toast.show('Đã sao chép link');
+                  this.props.dispatch(changeModalState(!this.props.openMenu))
+                }}
+                style={[styles.modalItem, { borderBottomLeftRadius: 10, borderBottomRightRadius: 10, borderBottomWidth: 0 }]}
+              >
+                <View>
+                  <Text style={[styles.modalText,{  color: this.props.textColor }]}>Sao chép link
+                        </Text>
+                </View>
+              </TouchableHighlight>
+
+            </Animatable.View>
+          </TouchableOpacity>
+        }
+
           <Image
           style={{width: width, height: width *9/16}}
           source={{uri: this.props.row.thumb }}/>
@@ -448,7 +541,34 @@ class NewsItem extends Component {
     )
   }
 }
-
+// function renderNode(node, index, siblings, parent, defaultRenderer) {
+//   if (node.name == 'figure') {
+//     const a = node.attribs["data-video-src"];
+//     console.log(a)
+//     return (
+//       <View key={index} style={{width: width, height: 300}}>
+//         <Video source={{uri: a}}   // Can be a URL or a local file.
+//          ref={(ref) => {
+//            this.player = ref
+//          }}                                      // Store reference
+//          rate={1.0}                              // 0 is paused, 1 is normal.
+//          muted={false}
+//          paused={false}
+//          resizeMode="cover"                      // Fill the whole screen at aspect ratio.*
+//          repeat={true}                           // Repeat forever.
+//          playInBackground={false}                // Audio continues to play when app entering background.
+//          playWhenInactive={false}                // [iOS] Video continues to play when control or notification center are shown.
+//          style={{
+//             position: 'absolute',
+//             top: 0,
+//             left: 0,
+//             bottom: 0,
+//             right: 0,
+//           }} />
+//       </View>
+//     );
+//   }
+// }
 const styles = {
   container: {
 
